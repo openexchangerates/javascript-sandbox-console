@@ -42,6 +42,7 @@
 	border:0 none;
 }
 #sandbox pre.output span           { color:#f7f7f7; }
+#sandbox pre.output span.command   { color:#ccc; }
 #sandbox pre.output span.prefix    { color:#777; }
 #sandbox pre.output span.undefined { color:#777; }
 #sandbox pre.output span.string    { color:#99f; }
