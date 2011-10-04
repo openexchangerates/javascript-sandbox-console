@@ -1,5 +1,5 @@
 /**
- * javascript sandbox console 0.1 - joss crowcroft
+ * javascript sandbox console 0.1.1 - joss crowcroft
  * 
  * requires underscore, backbone, backbone-localStorage and jquery
  * 
@@ -54,10 +54,13 @@ var Sandbox = {
 			var history = this.get('history');
 
 			// Tidy up the item's result
-			if (_.isString(item.result)) item.result = '\"' + item.result.toString() +'\"';
-			if (_.isObject(item.result)) item.result = item.result.toString();
+			if (_.isString(item.result)) item.result = '\"' + item.result.toString().replace(/"/g, '\\"') + '\"';
+			if (_.isObject(item.result)) item.result = item.result.toString().replace(/"/g, '\\"');
 			if (_.isUndefined(item.result)) item.result = "undefined";
-	
+
+			//
+/* console.log(typeof item.result, item.result); */
+/* return false */
 			// Add the command and result to the history
 			history.push(item);
 
@@ -156,8 +159,8 @@ var Sandbox = {
 					return memo + this.format({
 						_hidden : command._hidden,
 						_class : command._class,
-						command : command.command,
-						result : command.result
+						command : this.toEscaped(command.command),
+						result :  this.toEscaped(command.result)
 					});
 				}, "", this)
 			);
@@ -199,6 +202,17 @@ var Sandbox = {
 				this.textarea[0].selectionStart = index;
 				this.textarea[0].selectionEnd = index;
 			}
+		},
+
+		// Escapes a string so that it can be safely html()'ed into the output:
+		toEscaped: function(string) {
+		    return String(string)
+		    	.replace(/\\"/g, '"')
+	            .replace(/&/g, '&amp;')
+	            .replace(/"/g, '&quot;')
+	            .replace(/'/g, '&#39;')
+	            .replace(/</g, '&lt;')
+	            .replace(/>/g, '&gt;');
 		},
 
 		// Focuses the input textarea
@@ -256,6 +270,7 @@ var Sandbox = {
 				else if (this.historyState >= history.length) this.historyState = history.length;
 				
 				// Update the currentHistory value and update the View
+				console.log(history[this.historyState].command);
 				this.currentHistory = history[this.historyState] ? history[this.historyState].command : "";
 				this.update();
 
