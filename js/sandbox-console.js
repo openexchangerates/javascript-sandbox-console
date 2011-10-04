@@ -3,7 +3,7 @@
  * 
  * requires underscore, backbone, backbone-localStorage and jquery
  * 
- * https://josscrowcroft.github.com/javascript-sandbox-console/
+ * http://josscrowcroft.github.com/javascript-sandbox-console/
  */
 var Sandbox = {
 
