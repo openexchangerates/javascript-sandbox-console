@@ -8,22 +8,22 @@
 
 @font-face {
     font-family: 'cp-mono';
-    src: url('resources/fonts/cpmono/CPMono_v07_Plain-webfont.eot');
-    src: url('resources/fonts/cpmono/CPMono_v07_Plain-webfont.eot?#iefix') format('embedded-opentype'),
-         url('resources/fonts/cpmono/CPMono_v07_Plain-webfont.woff') format('woff'),
-         url('resources/fonts/cpmono/CPMono_v07_Plain-webfont.ttf') format('truetype'),
-         url('resources/fonts/cpmono/CPMono_v07_Plain-webfont.svg#CPMono_v07Bold') format('svg');
+    src: url('fonts/cpmono/CPMono_v07_Plain-webfont.eot');
+    src: url('fonts/cpmono/CPMono_v07_Plain-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/cpmono/CPMono_v07_Plain-webfont.woff') format('woff'),
+         url('fonts/cpmono/CPMono_v07_Plain-webfont.ttf') format('truetype'),
+         url('fonts/cpmono/CPMono_v07_Plain-webfont.svg#CPMono_v07Bold') format('svg');
     font-weight: normal;
     font-style: normal;
 
 }
 @font-face {
     font-family: 'cp-mono-bold';
-    src: url('resources/fonts/cpmono/CPMono_v07_Bold-webfont.eot');
-    src: url('resources/fonts/cpmono/CPMono_v07_Bold-webfont.eot?#iefix') format('embedded-opentype'),
-         url('resources/fonts/cpmono/CPMono_v07_Bold-webfont.woff') format('woff'),
-         url('resources/fonts/cpmono/CPMono_v07_Bold-webfont.ttf') format('truetype'),
-         url('resources/fonts/cpmono/CPMono_v07_Bold-webfont.svg#CPMono_v07Bold') format('svg');
+    src: url('fonts/cpmono/CPMono_v07_Bold-webfont.eot');
+    src: url('fonts/cpmono/CPMono_v07_Bold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/cpmono/CPMono_v07_Bold-webfont.woff') format('woff'),
+         url('fonts/cpmono/CPMono_v07_Bold-webfont.ttf') format('truetype'),
+         url('fonts/cpmono/CPMono_v07_Bold-webfont.svg#CPMono_v07Bold') format('svg');
     font-weight: normal;
     font-style: normal;
 
@@ -59,7 +59,7 @@ html {
 	padding:0;
 }
 body {
-	background:url('resources/img/body_bg.gif');
+	background:url('img/body_bg.gif');
 	max-width:640px;
 	min-width:400px;
 	margin:30px auto 120px;
