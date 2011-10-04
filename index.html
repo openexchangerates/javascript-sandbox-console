@@ -210,10 +210,11 @@ window.sandbox = new Sandbox.View({
 
 
 			// GUI demo controls:
-			DAT.GUI.suppressHotKeys = true;
+			DAT.GUI.supressHotKeys = true;
 			DAT.GUI.autoPlace = false;
 
-			var gui = new DAT.GUI();
+			window.gui = new DAT.GUI();
+
 			gui.name('Commands to try out');
 			gui.close();
 
@@ -240,7 +241,7 @@ window.sandbox = new Sandbox.View({
 			gui.add(sandbox, 'custom6').name('Multi-line input (use <code>alt</code> + <code>return</code>/<code>up</code>/<code>down</code>)');
 			gui.add(sandbox, 'custom7').name('Throw an error');
 
-			// gui.open();
+			gui.open();
 
 
 			// twitter:
