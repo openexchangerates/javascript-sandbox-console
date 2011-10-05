@@ -58,9 +58,6 @@ var Sandbox = {
 			if (_.isObject(item.result)) item.result = item.result.toString().replace(/"/g, '\\"');
 			if (_.isUndefined(item.result)) item.result = "undefined";
 
-			//
-/* console.log(typeof item.result, item.result); */
-/* return false */
 			// Add the command and result to the history
 			history.push(item);
 
