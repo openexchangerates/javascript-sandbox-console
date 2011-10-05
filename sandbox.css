@@ -74,7 +74,15 @@
 #sandbox textarea:focus {
 	outline:0 none;
 }
-#sandbox pre.output::-webkit-scrollbar {
+
+
+#sandbox pre.output::-webkit-scrollbar,
+#sandbox pre.output::-webkit-scrollbar-button,
+#sandbox pre.output::-webkit-scrollbar-track,
+#sandbox pre.output::-webkit-scrollbar-track-piece,
+#sandbox pre.output::-webkit-scrollbar-thumb,
+#sandbox pre.output::-webkit-scrollbar-corner,
+#sandbox pre.output::-webkit-resizer {
 	background: transparent;
 }
 #sandbox pre.output::-webkit-scrollbar {
