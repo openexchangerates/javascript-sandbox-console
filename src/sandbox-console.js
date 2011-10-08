@@ -1,5 +1,5 @@
 /**
- * javascript sandbox console 0.1.3 - joss crowcroft
+ * javascript sandbox console 0.1.4 - joss crowcroft
  * 
  * requires underscore, backbone, backbone-localStorage and jquery
  * 
@@ -14,14 +14,19 @@ var Sandbox = {
 	 */
 	Model : Backbone.Model.extend({
 		defaults: {
-			history: []
+			history : [],
+			iframe : false, // if true, run `eval` inside a sandboxed iframe
+			fallback : true // if true, use native `eval` if the iframe method fails
 		},
 		initialize: function() {
 			_.bindAll(this);
 
 			// Attempt to fetch the Model from localStorage
 			this.fetch();
-			
+
+			// Set up the iframe sandbox if needed
+			if ( this.get('iframe') ) this.iframeSetup();
+
 			// When the Model is destroyed (eg. via ':clear'), erase the current history as well
 			this.bind("destroy", function(model) {
 				model.set({history:[]});
@@ -33,7 +38,8 @@ var Sandbox = {
 		
 		// Parser for restoring the Model's state
 		// Backbone.localStorage adapter stores a collection, so grab the first 'model'
-		parse : function(data) {
+		parse : function(data) {	
+
 			// `parse` also fires when doing a save, so just return the model for that
 			if ( !_.isArray(data) || data.length < 1 || !data[0] ) return data;
 
@@ -80,6 +86,40 @@ var Sandbox = {
 			return this;
 		},
 
+		// Creates the sandbox iframe, if needed, and stores it
+		iframeSetup : function() {
+			this.sandboxFrame = $('<iframe width="0" height="0"/>').css({visibility : 'hidden'}).appendTo('body')[0];
+			this.sandbox = this.sandboxFrame.contentWindow;
+
+			// This should help IE run eval inside the iframe.
+			if (!this.sandbox.eval && this.sandbox.execScript) {
+				this.sandbox.execScript("null");
+			}
+		},
+
+		// Runs `eval` safely inside the sandboxed iframe
+		iframeEval : function(command) {
+			// Set up the iframe if not set up already (in case iframe has been enabled):
+			if ( !this.sandbox ) this.iframeSetup();
+
+			// Evaluate inside the sandboxed iframe, if possible.
+			// If fallback is allowed, use basic eval, or else throw an error.
+			return this.sandbox.eval ? this.sandbox.eval(command) : this.get('fallback') ? eval(command) : new Error("Can't evaluate inside the iframe - please report this bug along with your browser information!");
+		},
+
+		// One way of loading scripts into the document or the sandboxed iframe:
+		load : function(src) {
+			var script = document.createElement('script');
+			script.type = "text/javascript";
+			script.src = src;
+
+			if ( this.get('iframe') ) {
+				return this.sandboxFrame ? this.sandboxFrame.contentDocument.body.appendChild(script) : new Error("sandbox: iframe has not been created yet, cannot load " + src);
+			} else {
+				return document.body.appendChild(script);
+			}
+		},
+
 		// Evaluate a command and save it to history
 		evaluate: function(command) {
 			if ( !command )
@@ -91,7 +131,7 @@ var Sandbox = {
 			
 			// Evaluate the command and store the eval result, adding some basic classes for syntax-highlighting
 			try {
-				item.result = eval.call(window, command);
+				item.result = this.get('iframe') ? this.iframeEval(command) : eval.call(window, command);
 				if ( _.isUndefined(item.result) ) item._class = "undefined";
 				if ( _.isNumber(item.result) ) item._class = "number";
 				if ( _.isString(item.result) ) item._class = "string";
@@ -327,6 +367,13 @@ var Sandbox = {
 					result : this.helpText
 				});
 			}
+			// `:load <script src>`
+			if ( command.indexOf(":load") > -1 ) {
+				return this.model.addHistory({
+					command : command,
+					result : this.model.load( command.substring(6) )
+				});
+			} 
 
 			// If no special commands, return false so the command gets evaluated
 			return false;

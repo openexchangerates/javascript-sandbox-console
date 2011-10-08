@@ -35,7 +35,7 @@
 
 	<h2>a mini javascript console to play in</h2>
 	
-	<div id="sandbox">playground sandbox loading...</div>
+	<div id="sandbox">sandbox loading...</div>
 
 	<div class="content">
 		<div class="clearfix">
@@ -54,13 +54,14 @@
 		<p>For now, have a play around, see if you can contribute and please <a href="https://github.com/josscrowcroft/javascript-sandbox-console/issues" title="js sandbox console issues">report issues</a>!</p>
 	
 
-		<h3>Features</h3>
+		<h3>Features!</h3>
 	
 		<ul>
-			<li>Up/down command history (with localStorage persistence)</li>
+			<li>Up/down command history, with localStorage saving/persistence</li>
+			<li>Option to evaluate all commands inside a hidden <code>&lt;iframe&gt;</code>, to block access to the global window, with a script loader to inject your libraries of choice</li>
 			<li>Basic syntax highlighting for errors and variable types
-			<li>Special commands (like <code>:help</code> and <code>:clear</code>)</li>
-			<li>Resizes nicely into any container</li>
+			<li>Special commands (like <code>:help</code>, <code>:clear</code> and <code>:load</code>)</li>
+			<li>Resizes nicely into any container, fully embeddable</li>
 			<li>No complicated setup required, just paste in the codez and off you go.</li>
 		</ul>
 	
@@ -116,12 +117,12 @@
 
 		<h3>Extra Options</h3>
 
-		<p>You can pass extra options in to the Sandbox Backbone View to control elements of the console. Here they are (more on the way):</p>
+		<p>You can pass extra options in to the Sandbox Backbone Model and View to control elements of the console. Here they are (more on the way):</p>
 
 		<pre class="prettyprint">// Create the sandbox:
 window.sandbox = new Sandbox.View({
 	// these two are required:
-	model : new Sandbox.Model(),
+	model : new Sandbox.Model(), // see below for more
 	el : $('#sandbox'), // or etc.
 	
 	// these are optional (defaults are given here):
@@ -130,13 +131,29 @@ window.sandbox = new Sandbox.View({
 	tabCharacter : "\t",
 	placeholder : "// type some javascript and hit enter (:help for info)"
 });</pre>
+
+
+		<h3>Sandboxed iFrame Mode</h3>
+
+		<p>By default, the sandbox evaluates commands in the global (top-level) scope. To prevent users from screwing up the active document (or to create a totally clean execution context to play in) you can switch on the <code>iframe</code> mode on the <code>Sandbox.Model</code>. This will create an invisible <code>&lt;iframe&gt;</code> element, and evaluate all the commands inside its window context.</p>
+		<p>NB: if you do this, the users won't have access to globals from the page you're running (including any libraries or scripts you've included). That might be what you want, or it might not. Either way, there's also a <code>sandbox.model.load()</code> method you can tap, to inject js files into the <code>&lt;iframe&gt;</code> window, which makes them available in the sandbox.</p>
+		<p>In retrospect, this is probably the best way to run the sandbox - as long as you remember to include the libraries you want to have available!</p>
+		<pre class="prettyprint">// Create the sandbox, with `iframe` mode on:
+window.sandbox = new Sandbox.View({
+	model : new Sandbox.Model({ iframe : true }),
+	el : $('#sandbox')
+});
+
+// Pre-load your libraries for the iframe:
+sandbox.model.load('http://code.jquery.com/jquery-1.6.4.js');
+sandbox.model.load('my/cool/library.js');</pre>
 		
 		
 		<h3>Roadmap / To-Do</h3>
 		
 		<ul>
-			<li>Make sure it works in browsers without localStorage</li>
-			<li>Add option to execute javascript inside a truly 'sandboxed' scope (execution context)</li>
+			<li>Test it in IE 7+ and make changes</li>
+			<li>Make sure it works without localStorage</li>
 			<li>Add option for maximum history length</li>
 			<li>Create some extra CSS styles/skins and add to demo</li>
 			<li>Write CSS example where X/Y scrolling is disabled and output is wrapped</li>
