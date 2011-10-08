@@ -279,7 +279,6 @@ var Sandbox = {
 				else if (this.historyState >= history.length) this.historyState = history.length;
 				
 				// Update the currentHistory value and update the View
-				console.log(history[this.historyState].command);
 				this.currentHistory = history[this.historyState] ? history[this.historyState].command : "";
 				this.update();
 
