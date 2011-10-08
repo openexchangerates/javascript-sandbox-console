@@ -48,14 +48,26 @@ var Sandbox = {
 
 			return data[0];
 		},
-	
+
+		// Inspect an object and output the results
+		// todo: Implement a custom stringify similar to jsconsole.com, to include native
+		// and circular objects, and all object methods
+		stringify : function(obj) {
+			try {
+				return JSON.stringify(obj);
+			} catch(e) {
+				return obj.toString();
+			}
+		},
+
 		// Adds a new item to the history
 		addHistory: function(item) {
 			var history = this.get('history');
 
 			// Tidy up the item's result
 			if (_.isString(item.result)) item.result = '\"' + item.result.toString().replace(/"/g, '\\"') + '\"';
-			if (_.isObject(item.result)) item.result = item.result.toString().replace(/"/g, '\\"');
+			if (_.isFunction(item.result)) item.result = item.result.toString().replace(/"/g, '\\"');
+			if (_.isObject(item.result)) item.result = this.stringify(item.result).replace(/"/g, '\\"');
 			if (_.isUndefined(item.result)) item.result = "undefined";
 
 			// Add the command and result to the history
@@ -267,7 +279,6 @@ var Sandbox = {
 				else if (this.historyState >= history.length) this.historyState = history.length;
 				
 				// Update the currentHistory value and update the View
-				console.log(history[this.historyState].command);
 				this.currentHistory = history[this.historyState] ? history[this.historyState].command : "";
 				this.update();
 
