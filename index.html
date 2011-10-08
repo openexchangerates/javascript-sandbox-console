@@ -249,7 +249,7 @@ sandbox.model.load('my/cool/library.js');</pre>
 			sandbox.custom5 = function() {  sandbox.currentHistory = "var who = 'joss', where = 'hong kong';"; sandbox.update(); sandbox.textarea.focus(); };
 			sandbox.custom6 = function() { sandbox.currentHistory = "function doYaFeelLucky() {\n\treturn 'well do ya, punk?';\n};\ndoYaFeelLucky(); // hit return!"; sandbox.update(); sandbox.textarea.focus(); };
 			sandbox.custom7 = function() {  sandbox.currentHistory = "somethingUndefined; // hit enter!"; sandbox.update(); sandbox.textarea.focus(); };
-			sandbox.custom8 = function() {  sandbox.currentHistory = "sandbox.model.set({iframe : true }); // hit enter!"; sandbox.update(); sandbox.textarea.focus(); };
+			sandbox.custom8 = function() {  sandbox.model.set({ iframe : true }); sandbox.model.addHistory({ command : " ", result : "Commands are now being evaluated inside a sandboxed iframe." }); sandbox.model.iframeSetup(); };
 			sandbox.custom9 = function() {  sandbox.currentHistory = ":load http://code.jquery.com/jquery-1.6.4.js"; sandbox.update(); sandbox.textarea.focus(); };
 			
 			gui.add(sandbox, 'custom1').name('Show <code>:help</code> menu');
