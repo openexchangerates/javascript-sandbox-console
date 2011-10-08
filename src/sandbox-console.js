@@ -52,6 +52,8 @@ var Sandbox = {
 				return command;
 			});
 
+			// Shouldn't save whether/not this is sandboxed (it's confusing)
+			delete data[0].iframe;
 			return data[0];
 		},
 

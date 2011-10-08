@@ -249,6 +249,8 @@ sandbox.model.load('my/cool/library.js');</pre>
 			sandbox.custom5 = function() {  sandbox.currentHistory = "var who = 'joss', where = 'hong kong';"; sandbox.update(); sandbox.textarea.focus(); };
 			sandbox.custom6 = function() { sandbox.currentHistory = "function doYaFeelLucky() {\n\treturn 'well do ya, punk?';\n};\ndoYaFeelLucky(); // hit return!"; sandbox.update(); sandbox.textarea.focus(); };
 			sandbox.custom7 = function() {  sandbox.currentHistory = "somethingUndefined; // hit enter!"; sandbox.update(); sandbox.textarea.focus(); };
+			sandbox.custom8 = function() {  sandbox.currentHistory = "sandbox.model.set({iframe : true }); // hit enter!"; sandbox.update(); sandbox.textarea.focus(); };
+			sandbox.custom9 = function() {  sandbox.currentHistory = ":load http://code.jquery.com/jquery-1.6.4.js"; sandbox.update(); sandbox.textarea.focus(); };
 			
 			gui.add(sandbox, 'custom1').name('Show <code>:help</code> menu');
 			gui.add(sandbox, 'custom2').name('<code>:clear</code> the command history');
@@ -257,6 +259,8 @@ sandbox.model.load('my/cool/library.js');</pre>
 			gui.add(sandbox, 'custom5').name('Define some variables');
 			gui.add(sandbox, 'custom6').name('Multi-line input (use <code>alt</code> + <code>return</code>/<code>up</code>/<code>down</code>)');
 			gui.add(sandbox, 'custom7').name('Throw an error');
+			gui.add(sandbox, 'custom8').name('Switch on <code>iFrame</code> sandboxing');
+			gui.add(sandbox, 'custom9').name('<code>:load</code> a script (jQuery)');
 
 			gui.open();
 
