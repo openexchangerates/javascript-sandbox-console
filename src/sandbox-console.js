@@ -1,5 +1,5 @@
 /**
- * javascript sandbox console 0.1.1 - joss crowcroft
+ * javascript sandbox console 0.1.3 - joss crowcroft
  * 
  * requires underscore, backbone, backbone-localStorage and jquery
  * 
