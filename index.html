@@ -146,9 +146,12 @@ window.sandbox = new Sandbox.View({
 
 // Pre-load your libraries for the iframe:
 sandbox.model.load('http://code.jquery.com/jquery-1.6.4.js');
-sandbox.model.load('my/cool/library.js');</pre>
-		
-		
+sandbox.model.load('my/cool/library.js');
+
+// You can also evaluate code inside the iframe after it loads:
+sandbox.model.iframeEval("var globalJoss = 'im global, bro'"); // globalJoss is now available in the iframe</pre>
+
+
 		<h3>Roadmap / To-Do</h3>
 		
 		<ul>

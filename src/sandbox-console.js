@@ -219,15 +219,24 @@ var Sandbox = {
 			// Set the textarea to the value of the currently selected history item
 			// Update the textarea's `rows` attribute, as history items may be multiple lines
 			this.textarea.val(this.currentHistory).attr('rows', this.currentHistory.split("\n").length);
-			
+
 			// Scroll the output to the bottom, so that new commands are visible
 			this.output.scrollTop(
 				this.output[0].scrollHeight - this.output.height()
 			);
 		},
-		
+
+		// Manually set the value in the sandbox textarea and focus it ready to submit:
+		setValue : function(command) {
+			this.currentHistory = command;
+			this.update();
+			this.setCaret( this.textarea.val().length );
+			this.textarea.focus();
+			return false;
+		},
+
 		// Returns the index of the cursor inside the textarea
-		getCaret: function() {
+		getCaret : function() {
 			if (this.textarea[0].selectionStart) {
 				return this.textarea[0].selectionStart; 
 			} else if (document.selection) { 
@@ -249,10 +258,8 @@ var Sandbox = {
 
 		// Sets the cursor position inside the textarea (not IE, afaik)
 		setCaret: function(index) {
-			if (this.textarea[0].selectionStart) {
-				this.textarea[0].selectionStart = index;
-				this.textarea[0].selectionEnd = index;
-			}
+			this.textarea[0].selectionStart = index;
+			this.textarea[0].selectionEnd = index;
 		},
 
 		// Escapes a string so that it can be safely html()'ed into the output:
