@@ -13,6 +13,9 @@ by **[joss](http://www.josscrowcroft.com)**
 
 ## Changelog
 
+### 0.1.5
+* Adds `setValue` method, to set the value inside the sandbox
+
 ### 0.1.4
 * Adds an `iframe` setting on the Sandbox Model that, when active, creates a hidden `iframe` and evaluates all commands inside its 'sandboxed' scope - this blocks access to globals and prevents users screwing up the DOM.
 * Adds a script loader method, `sandbox.model.load`, that injects a script into the page (or the `iframe`), making it available for the user.
