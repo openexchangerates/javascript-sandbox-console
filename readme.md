@@ -1,6 +1,6 @@
 # JavaScript Sandbox Console
 
-![js sandbox console screenshot](http://openexchangerates.github.io/js-sandbox-console/demo-resources/img/js-sandbox-console.png)
+![js sandbox console screenshot](https://raw.githubusercontent.com/openexchangerates/javascript-sandbox-console/master/demo-resources/img/js-sandbox-console.png)
 
 a javascript playground to enhance demos and homepages for javascript libraries, plugins and scripts, giving visitors an easy and chilled-out way to test-drive functionality.
 
