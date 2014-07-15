@@ -1,7 +1,7 @@
 /**
  * demo styles for the javascript sandbox console
  * 
- * not required for operation, but spanky nonetheless
+ * not required for operation (use sandbox.css)
  */
 
 /* --- fonts from fontsquirrel.com --- */
@@ -102,9 +102,6 @@ h4 {
 	margin:0 0 1.2em;
 }
 
-
-/* --- Other shiz --- */
-
 a,
 a:visited {
 	color:#28F;
@@ -168,14 +165,14 @@ pre {
 
 /* --- Bonus points: --- */
 
-/* For cool header effects, just add lettering.js! */
+/* lettering.js */
 h1 span:hover { border-bottom:7px solid #777; }
 h2 span { margin-right:-1px; }
 h2 span:hover { border-bottom:5px solid #777; }
 h3 span { margin-right:-1px; }
 h3 span:hover { border-bottom:4px solid #777; }
 
-/* For hot code highlighting, just add prettify.js! */
+/* code highlighting */
 @media screen {
 	.pln{ color:#fdf6e3 }
 	.str{ color:#cb4b16 } /* strings */
@@ -203,7 +200,7 @@ h3 span:hover { border-bottom:4px solid #777; }
 	}
 }
 
-/* For great scrollbars, just add Webkit! */
+/* Webkit scrollbars */
 .content pre::-webkit-scrollbar {
 	background: transparent;
 }

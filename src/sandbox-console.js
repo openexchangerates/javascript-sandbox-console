@@ -1,9 +1,9 @@
 /**
- * javascript sandbox console 0.1.5 - joss crowcroft
+ * javascript sandbox console 0.2
  * 
  * requires underscore, backbone, backbone-localStorage and jquery
  * 
- * http://josscrowcroft.github.com/javascript-sandbox-console/
+ * http://openexchangerates.github.io/javascript-sandbox-console/
  */
 var Sandbox = {
 
