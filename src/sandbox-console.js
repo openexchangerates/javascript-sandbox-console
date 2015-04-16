@@ -84,7 +84,8 @@ var Sandbox = {
 			history.push(item);
 
 			// Update the history state and save the model
-			this.set({ history : history }).change();
+			this.set({ history : history });
+			this.trigger('change');
 			this.save();
 
 			return this;
@@ -176,13 +177,13 @@ var Sandbox = {
 			this.model.bind("change", this.update);
 
 			// Delegate key and mouse events to View input
-			this.el.delegate("textarea", {
+			this.$el.delegate("textarea", {
 				keydown : this.keydown,
 				keyup : this.keyup
 			});
 
 			// Delegate click event to View output
-			this.el.delegate(".output", {
+			this.$el.delegate(".output", {
 				click : this.focus
 			});
 
@@ -196,12 +197,12 @@ var Sandbox = {
 
 		// Renders the Sandbox View initially and stores references to the elements
 		render: function() {
-			this.el.html(this.template({
+			this.$el.html(this.template({
 				placeholder : this.placeholder
 			}));
 
-			this.textarea = this.el.find("textarea");
-			this.output = this.el.find(".output");
+			this.textarea = this.$el.find("textarea");
+			this.output = this.$el.find(".output");
 
 			return this;
 		},
