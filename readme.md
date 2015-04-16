@@ -11,7 +11,7 @@ maintained by [Open Exchange Rates](https://openexchangerates.org) (see it in ac
 
 ## Changelog
 
-**0.3** — Why the fork?
+**0.2.1** — Why the fork?
 * [Underscore](http://underscorejs.org/) 1.1.7 → 1.8.3
 * [Backbone](http://backbonejs.org) 0.5.3 → 1.1.2
 * [Backbone localStorage](https://github.com/jeromegn/Backbone.localStorage) 1.0 → 1.1.16
