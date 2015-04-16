@@ -1,3 +1,12 @@
+### Why the fork?
+
+- Underscore version: 1.1.7 → 1.8.3
+- Backbone version: 0.5.3 → 1.1.2
+- Backbone localStorage 1.0 → 1.1.16
+- jQuery: 1.6.4 → 2.1.3
+
+---
+
 # JavaScript Sandbox Console
 
 ![js sandbox console screenshot](https://raw.githubusercontent.com/openexchangerates/javascript-sandbox-console/master/demo-resources/img/js-sandbox-console.png)
