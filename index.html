@@ -2,53 +2,35 @@
 <html lang="en" class="no-js">
 <head>
 	<meta charset="utf-8">
-	<title>javascript sandbox console demo</title>
-	<meta name="description" content="interactive javascript console for demos and homepages" />
-	<meta name="keywords" content="javascript, console, sandbox, playground, demo, interactive, plugin, backbone.js, jquery, underscore.js" />
-	<link rel="shortcut icon" href="http://faviconist.com/icons/c8d9b014e98028d3f2432482a1fbb48b/favicon.ico" />
-	<link rel="canonical" href="http://openexchangerates.github.io/javascript-sandbox-console/" />
+	<title>Online REPL Javascript Dive Planner</title>
+	<meta name="description" content="Online web-based REPL Javascript programmatic scuba diving decompression planner." />
+	<meta name="keywords" content="javascript, console, sandbox, repl, scuba diving, buhlmann, programmatic, decompression" />
+	<link rel="canonical" href="http://deco-planner.archisgore.com" />
 
-	<!-- The demo styles: -->
-	<link href="demo-resources/demo.css" rel="stylesheet"/>
-	
 	<!-- The Sandbox stylesheet: -->
 	<link href="src/sandbox.css" rel="stylesheet"/>
-
-	<!-- Google Analytics -->
-	<script type="text/javascript">
-		var _gaq = _gaq || [];
-		_gaq.push(['_setAccount', 'UA-17884149-3']);
-		_gaq.push(['_trackPageview']);
-		(function() {
-			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-		})();
-	</script>
 </head>
 
 <body>
 
 	<!-- HTML -->
 	
-	<h1>js sandbox console</h1>
+	<h1>Online Programmatic Javascript Dive Planner</h1>
 
-	<h2>a mini javascript console to play in</h2>
+	<h2>A javascript console to programmatically compute dive plans.</h2>
 	
-	<div id="sandbox">sandbox loading...</div>
+	<div id="sandbox">Dive planner loading...</div>
 
 	<div class="content">
 		<div class="clearfix">
-			<p class="left"><a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="josscrowcroft" data-url="http://openexchangerates.github.io/javascript-sandbox-console" data-text="javascript sandbox console: a backbone.js-powered playground for library/plugin demos" data-related="josscrowcroft">Tweet</a> &nbsp; <g:plusone size="medium"></g:plusone></p>
+			<p class="left"><a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-url="http://deco-planner.archisgore.com" data-text="Online web-based programmatic REPL dive planner.">Tweet</a> &nbsp; <g:plusone size="medium"></g:plusone></p>
 		</div>
 
-		<h2>Built with Backbone, jQuery, localStorage and &hearts;</h2>
+		<p>This is based on the openexchange Javascript web console combined with the scuba-dive Node.js module browserified. It was built out
+			of a desire to programmatically construct dive plans, evaluate them, and run multiple plans through programmatic constructs like loops.
+		Having full javascript programmatic capability allows you to run plans, get segments, reuse segments, and check for conditions.</p>
 		
-		<p>The js sandbox console is a javascript playground designed to enhance demos and homepages for javascript libraries, plugins and scripts, giving visitors an easy and chilled-out way to test-drive the functionality.</p>
-		
-		<p>Inspired by <a href="http://jsconsole.com" title="jsconsole.com" target="_blank">jsconsole.com</a> and built with <a href="http://documentcloud.github.com/backbone/" title="Backbone.js" target="_blank">Backbone.js</a> and jQuery.</p>
-
-		<p>Maintained by <strong><a href="https://openexchangerates.org" title="Open Exchange Rates free currency data API" target="_blank">Open Exchange Rates</a> (see it in action on the <strong><a href="http://openexchangerates.github.io/money.js" title="money.js currency conversion javascript library">money.js library</a></strong> homepage).</p>
+		<p>Maintained by <strong><a href="http://archisgore.com" title="Archis Gore" target="_blank">Archis Gore</a> </strong></p>
 	
 
 		<h3>Features</h3>
@@ -58,122 +40,12 @@
 			<li>Option to evaluate all commands inside a hidden <code>&lt;iframe&gt;</code> (blocking access to global window scope) with a script loader to inject your libraries of choice</li>
 			<li>Basic syntax highlighting for errors and variable types
 			<li>Special commands (like <code>:help</code>, <code>:clear</code> and <code>:load</code>)</li>
-			<li>Fits into any container and fully embeddable</li>
-			<li>Easy to set up, intuitive to use</li>
+			<li>Special pre-populated object called "dive" from which algorithms/plans can be created.</li>
 		</ul>
 	
 
 		<h3>Download / Fork</h3>
-
-		<p>You can check out the latest code from the <a href="https://github.com/openexchangerates/javascript-sandbox-console" title="js sandbox console">js sandbox console github repository</a>.</p>
-
-
-		<h3>Installation</h3>
-		
-		<p>Add a <code>&lt;div&gt;</code> element, link up the stylesheet, include the templates and dependencies and add the kickoff script and you're good to go:</p>
-		
-		<h4>In your &lt;head&gt;:</h4>
-		<pre class="prettyprint">&lt;link href=&quot;sandbox.css&quot; rel=&quot;stylesheet&quot; /&gt;</pre>
-	
-		<h4>Wherever you want the console to appear:</h4>
-		<pre class="prettyprint">&lt;div id=&quot;sandbox&quot;&gt;sandbox loading...&lt;/div&gt;</pre>
-
-		<h4>Anywhere between the &lt;div&gt; and the &lt;script&gt;s:</h4>
-		<pre class="prettyprint">&lt;!-- The sandbox template --&gt;
-&lt;script type=&quot;text/template&quot; id=&quot;tplSandbox&quot;&gt;
-	&lt;pre class=&quot;output&quot;&gt;&lt;/pre&gt;
-	&lt;div class=&quot;input&quot;&gt;
-		&lt;textarea rows=&quot;1&quot; placeholder=&quot;&lt;%= placeholder %&gt;&quot;&gt;&lt;/textarea&gt;
-	&lt;/div&gt;
-&lt;/script&gt;
-
-&lt;!-- The command/result template (NB whitespace/line breaks matter inside &lt;pre&gt; tag): --&gt;
-&lt;script type=&quot;text/template&quot; id=&quot;tplCommand&quot;&gt;&lt;% if (! _hidden) { %&gt;&lt;span class=&quot;command&quot;&gt;&lt;%= command %&gt;&lt;/span&gt;
-&lt;span class=&quot;prefix&quot;&gt;&lt;%= this.resultPrefix %&gt;&lt;/span&gt;&lt;span class=&quot;&lt;%= _class %&gt;&quot;&gt;&lt;%= result %&gt;&lt;/span&gt;
-&lt;% } %&gt;&lt;/script&gt;</pre>
-
-		<h4>Near the closing &lt;/body&gt; tag, after the templates:</h4>
-		<pre class="prettyprint">&lt;script src=&quot;js/libs/underscore.min.js&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;js/libs/backbone.min.js&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;js/libs/backbone-localstorage.min.js&quot;&gt;&lt;/script&gt;&lt;!-- opt --&gt;
-&lt;script src=&quot;js/libs/jquery.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;js/sandbox-console.js&quot;&gt;&lt;/script&gt;
-&lt;script type=&quot;text/javascript&quot;&gt;
-	jQuery(document).ready(function($) {
-		// Create the sandbox:
-		window.sandbox = new Sandbox.View({
-			el : $('#sandbox'),
-			model : new Sandbox.Model()
-		});
-	});
-&lt;/script&gt;</pre>
-		
-
-		<h3>Extra Options</h3>
-
-		<p>You can pass extra options in to the Sandbox Backbone Model and View to control elements of the console. They are self-explanatory - for example:</p>
-
-		<pre class="prettyprint">// Create the sandbox:
-window.sandbox = new Sandbox.View({
-	// these two are required:
-	model : new Sandbox.Model(), // see below for more
-	el : $('#sandbox'), // or etc.
-	
-	// these are optional (defaults are given here):
-	resultPrefix : "  => ",
-	helpText : "type javascript commands into the console, hit enter to evaluate. \n[up/down] to scroll through history, ':clear' to reset it. \n[alt + return/up/down] for returns and multi-line editing.",
-	tabCharacter : "\t",
-	placeholder : "// type some javascript and hit enter (:help for info)"
-});</pre>
-
-
-		<h3>Sandboxed iFrame Mode</h3>
-
-		<p>By default, the sandbox evaluates commands in the global (top-level/window) scope. To prevent users from playing with the active document (or to create a totally clean execution context to play in) you can switch on the <code>iframe</code> mode on the <code>Sandbox.Model</code>. This creates an invisible <code>&lt;iframe&gt;</code> element and evaluates all commands inside its context.</p>
-		<p>This means that visitors won't have access to globals from the page you're running (including any libraries or scripts you've included). Use <code>sandbox.model.load()</code> to inject js files into the <code>&lt;iframe&gt;</code> window, making them available in the sandbox.</p>
-		<p><strong>This is the recommended way to integrate the sandbox.</strong></p>
-
-		<pre class="prettyprint">// Create the sandbox, with `iframe` mode on:
-window.sandbox = new Sandbox.View({
-	model : new Sandbox.Model({ iframe : true }),
-	el : $('#sandbox')
-});
-
-// Pre-load your libraries for the iframe:
-sandbox.model.load('http://code.jquery.com/jquery-1.6.4.js');
-sandbox.model.load('my/cool/library.js');
-
-// You can also evaluate code inside the iframe after it loads:
-sandbox.model.iframeEval("var globalJoss = 'im global, bro'"); // globalJoss is now available in the iframe</pre>
-
-
-		<h3>Roadmap / To-Do</h3>
-		
-		<p><a href="https://github.com/openexchangerates/javascript-sandbox-console/issues" title="js sandbox console issues">Contributions welcome</a>!</p>
-		
-		<ul>
-			<li>Verify IE support</li>
-			<li>Add maximum history length option</li>
-			<li>Create extra CSS styles/skins and add to demo</li>
-			<li>Write CSS for disabled X/Y scrolling and wrapped output</li>
-			<li>Improve up/down action in multi-line input</li>
-		</ul>
-
-
-		<h3>Links</h3>
-
-		<p>the javascript sandbox console is open source and maintained by <strong><a href="https://openexchangerates.org" title="Open Exchange Rates free currency data API" target="_blank">Open Exchange Rates</a></strong> - the lightweight currency data API for developers, startups and Fortune 500s.</p>
-		<p>Feedback, support or questions? <strong><a href="mailto:info@openexchangerates.org" title="Contact Open Exchange Rates">Contact Open Exchange Rates</a></strong> for guidance.</p>
-		<p>Bugs, issues, suggestions or contributions? Please <strong><a href="https://github.com/openexchangerates/javascript-sandbox-console/issues" title="js sandbox console Github repository issues">post them here</a></strong>.</p>
-
-		<p><a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="josscrowcroft" data-url="http://openexchangerates.github.io/javascript-sandbox-console" data-text="javascript sandbox console: a backbone.js-powered playground for library/plugin demos" data-related="josscrowcroft">Tweet</a> &nbsp; <g:plusone size="medium"></g:plusone></p>
-
-	</div>
-
-
-
-
+		<p>You can check out the latest code from the <a href="https://github.com/archisgore/online-deco-console" title="online programmatic javascript dive planner">Online Dive Planner console github repo</a>.</p>
 
 	<!-- Templates -->
 	
@@ -206,9 +78,11 @@ sandbox.model.iframeEval("var globalJoss = 'im global, bro'"); // globalJoss is 
 
 	<!-- The JS Sandbox Console script (requires underscore, backbone and jquery): -->
 	<script src="src/sandbox-console.js"></script>
+	<script src="src/scuba-dive.browserified.js"></script>
 	
 	<!-- When ready, create the model and view -->
 	<script type="text/javascript">
+		var dive = require("/scuba-dive.js");
 		jQuery(document).ready(function($) {
 			// Create the sandbox:
 			window.sandbox = new Sandbox.View({
@@ -237,29 +111,23 @@ sandbox.model.iframeEval("var globalJoss = 'im global, bro'"); // globalJoss is 
 				right:-10
 			}).appendTo('body');
 
+			var ndlComputeString = "var buhlmann = dive.deco.buhlmann();\nvar newPlan = new buhlmann.plan(buhlmann.ZH16BTissues);\nnewPlan.addBottomGas(\"air\", 0.21, 0.0);\nvar gradientFactor = 1.5; //This was choosen to closely match PADI dive tables.\nndl = newPlan.ndl(dive.feetToMeters(140), \"air\", gradientFactor);\n\"No deco limit for 140 feet, on air is \" + ndl + \" minutes\";";
+			var decoComputeString = "var buhlmann = dive.deco.buhlmann();\nvar plan = new buhlmann.plan(buhlmann.ZH16BTissues);\nplan.addBottomGas(\"2135\", 0.21, 0.35);\nplan.addDecoGas(\"50%\", 0.50, 0);\nplan.addDecoGas(\"Oxygen 100%\", 1.0, 0.0);\nplan.addDepthChange(0, dive.feetToMeters(150), \"2135\", 5);\nplan.addFlat(dive.feetToMeters(150), \"2135\", 25);\nvar decoPlan = plan.calculateDecompression(false, 0.2, 0.8, 1.6, 30);\n\"Complete dive profile, including decompression, for these parameters is: \\n\" + JSON.stringify(decoPlan, null, 2);";
+
 			// Some custom callback functions for dat.gui:
 			sandbox.custom1 = function() {  sandbox.currentHistory = ":help"; sandbox.update(); sandbox.textarea.focus(); };
 			sandbox.custom2 = function() {  sandbox.currentHistory = ":clear"; sandbox.update(); sandbox.textarea.focus(); };
-			sandbox.custom3 = function() {  sandbox.currentHistory = "JSON.stringify(sandbox.model.get('history'), 0, 4);"; sandbox.update(); sandbox.textarea.focus(); };
-			sandbox.custom4 = function() {  sandbox.currentHistory = "sandbox.resultPrefix = '&raquo; '"; sandbox.update(); sandbox.textarea.focus(); };
-			sandbox.custom5 = function() {  sandbox.currentHistory = "var who = 'you', where = 'your life';"; sandbox.update(); sandbox.textarea.focus(); };
-			sandbox.custom6 = function() { sandbox.currentHistory = "function saySomethingFunny() {\n\treturn 'something funny';\n};\nsaySomethingFunny(); // hit return!"; sandbox.update(); sandbox.textarea.focus(); };
-			sandbox.custom7 = function() {  sandbox.currentHistory = "somethingUndefined; // hit enter!"; sandbox.update(); sandbox.textarea.focus(); };
-			sandbox.custom8 = function() {  sandbox.model.set({ iframe : true }); sandbox.model.addHistory({ command : " ", result : "Commands are now being evaluated inside a sandboxed iframe." }); sandbox.model.iframeSetup(); };
-			sandbox.custom9 = function() {  sandbox.currentHistory = ":load http://code.jquery.com/jquery-1.6.4.js"; sandbox.update(); sandbox.textarea.focus(); };
-			
+			sandbox.ndlCompute = function() {  sandbox.currentHistory = ndlComputeString; sandbox.update(); sandbox.textarea.focus(); };
+			sandbox.decoCompute = function() {  sandbox.currentHistory = decoComputeString; sandbox.update(); sandbox.textarea.focus(); };
+
 			gui.add(sandbox, 'custom1').name('Show <code>:help</code> menu');
 			gui.add(sandbox, 'custom2').name('<code>:clear</code> the command history');
-			gui.add(sandbox, 'custom3').name('View all history');
-			gui.add(sandbox, 'custom4').name('Set the result/response prefix');
-			gui.add(sandbox, 'custom5').name('Define some variables');
-			gui.add(sandbox, 'custom6').name('Multi-line input (use <code>alt</code> + <code>return</code>/<code>up</code>/<code>down</code>)');
-			gui.add(sandbox, 'custom7').name('Throw an error');
-			gui.add(sandbox, 'custom8').name('Switch on <code>iFrame</code> sandboxing');
-			gui.add(sandbox, 'custom9').name('<code>:load</code> a script (jQuery)');
+			gui.add(sandbox, 'ndlCompute').name('Compute a sample No-Deco limit.');
+			gui.add(sandbox, 'decoCompute').name('Compute a complex decompression plan.');
 
 			gui.open();
 
+			sandbox.model.load("src/scuba-dive.browserified.js");
 
 			// twitter:
 			(function(d, t) {
@@ -269,14 +137,7 @@ sandbox.model.iframeEval("var globalJoss = 'im global, bro'"); // globalJoss is 
 				g.src = 'http://platform.twitter.com/widgets.js';
 				s.parentNode.insertBefore(g, s);
 			})(document, 'script');
-	
-			// google plus:
-			window.___gcfg = {lang: 'en-GB'};
-			(function() {
-				var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-				po.src = 'https://apis.google.com/js/plusone.js';
-				var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-			})();
+
 		});
 	</script>
 
