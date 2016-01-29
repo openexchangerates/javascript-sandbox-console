@@ -1,36 +1,30 @@
-# JavaScript Sandbox Console
+# Online Web-based Deco Console
 
-![js sandbox console screenshot](https://raw.githubusercontent.com/openexchangerates/javascript-sandbox-console/master/demo-resources/img/js-sandbox-console.png)
+You should find this hosted on: http://deco-planner.archisgore.com/
 
-a javascript playground to enhance demos and homepages for javascript libraries, plugins and scripts, giving visitors an easy and chilled-out way to test-drive functionality.
+This repo combines two public-domain repos. This excellent Javascript sandbox console: https://github.com/openexchangerates/javascript-sandbox-console
 
-see the **[project homepage](http://openexchangerates.github.io/javascript-sandbox-console/)** for a live demo, features, installation guide and more info.
+With a browserified version of this Node.js module:
+https://github.com/nyxtom/dive
 
-maintained by [Open Exchange Rates](https://openexchangerates.org) (see it in action on the **[money.js](http://openexchangerates.github.com/money.js)** homepage).
+When you launch this website, you get an online command-line style REPL javascript console, to compute dive plans.
 
+Here's a few examples on how to run a dive profile:
 
-## Changelog
+var buhlmannDeco = dive.deco.buhlmann();
+var newPlan = new buhlmannDeco.plan(buhlmannDeco.ZH16ATissues); // 1 abs pressure in fresh water
+newPlan.addBottomGas("2135", 0.21, 0.35);
+newPlan.addDecoGas("50%", 0.5, 0.0);
+newPlan.addDepthChange(0, 50, "2135", 5);
+newPlan.addFlat(50, "2135", 25);
+var decoPlan = plan.calculateDecompression(false, 0.2, 0.8, 1.6, 30); //gradientFactorLow = 0.2, gradientFactorHigh=0.8, deco ppO2 = 1.6, and max END allowed: 30 meters.
 
-**0.2**
-* Now maintained by Open Exchange Rates
-* Improved documentation
+You can configure things like gradient factor, ppO2 exposure, and maximum END.
 
-**0.1.5**
-* Added `setValue` method, to programmatically set the value inside the sandbox
+This tool is mainly intended to allow REPL-style dive planning, where you can add steps, remove steps, and compute plans programmatically. You can generate a large number of tables or validate multiple hypotheses rapidly.
 
-**0.1.4**
-* Added an `iframe` setting on the Sandbox Model that creates a hidden `iframe` and evaluates all commands inside its 'sandboxed' scope -  effectively blocking access to global variables.
-* Added a script loader method `sandbox.model.load` to inject a script into the page (or the `iframe`).
-* Added `:load` special command, available from the sandbox command line, to bootstrap any script into the global context (most useful in `iframe` mode. E.g.: `:load http://code.jquery.com/jquery-1.6.4.js`
+## TODO
 
-**0.1.3**
-* Added very basic stringification for objects. If `JSON.stringify(obj)` works, it prints the result, otherwise it's `obj.toString()`
-
-**0.1.2**
-* Mirrored gh-pages and master branches
-
-**0.1.1**
-* Added view.toEscaped() method to escape HTML strings for safe output templating
-
-**0.1**
-* First release
+* Build a web-based GUI for this library so you have an online web-based deco-planner.
+* Build a D3/SVG based grapher so we can graph rate-of-change-of-deco against different variables.
+* Implement VPM in the root dive library.
