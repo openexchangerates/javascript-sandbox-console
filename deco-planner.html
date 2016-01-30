@@ -6,9 +6,7 @@
 	<meta name="description" content="Online web-based REPL Javascript programmatic scuba diving decompression planner." />
 	<meta name="keywords" content="javascript, console, sandbox, repl, scuba diving, buhlmann, programmatic, decompression" />
 	<link rel="canonical" href="http://deco-planner.archisgore.com" />
-
-	<!-- The Sandbox stylesheet: -->
-	<link href="src/sandbox.css" rel="stylesheet"/>
+	<link href="http://cdn.alloyui.com/3.0.1/aui-css/css/bootstrap.min.css" rel="stylesheet"/>
 </head>
 
 <body>
@@ -26,131 +24,137 @@
 
 	<!-- HTML -->
 	
-	<h1>Online Programmatic Javascript Dive Planner</h1>
+	<h1>Online Programmatic Javascript Dive Planner (With GUI)</h1>
 
 	<h2>A javascript console to programmatically compute dive plans.</h2>
 	
-	<div id="sandbox">Dive planner loading...</div>
-
 	<div class="content">
-		<div class="clearfix">
-			<p class="left"><a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-url="http://deco-planner.archisgore.com" data-text="Online web-based programmatic REPL dive planner.">Tweet</a> &nbsp; <g:plusone size="medium"></g:plusone></p>
+
+
+		<div id="topLevelTabs">
+
+			<ul class="nav nav-tabs">
+				<li class="active"><a href="#tab-gui-planner">GUI Planner</a></li>
+				<li><a href="#tab-javascript-editor">Javascript Editor</a></li>
+				<li><a href="#tab-repl-console">REPL Console</a></li>
+			</ul>
+
+			<div class="tab-content">
+				<div id="tab-gui-planner" class="tab-pane">
+				</div>
+				<div id="tab-javascript-editor">
+					<div id="javascriptEditor"></div>
+                    <button id="executeFromEditor"></button>
+
+                    <pre id="javascriptEditorOutputScrollNode" style="overflow-y: scroll; height: 300px">
+                        <h4 id="javascriptEditorResults">Results</h4>
+                        <pre id="javascriptEditorResultsText"></pre>
+                        <h4 id="javascriptEditorOutput">Console Output</h4>
+                        <pre id="javascriptEditorConsoleOutputText"></pre>
+                    </div>
+
+				</div>
+				<div id="tab-repl-console" class="tab-pane">
+				</div>
+			</div>
+
 		</div>
 
-		<p>This is based on the openexchange Javascript web console combined with the scuba-dive Node.js module browserified. It was built out
-			of a desire to programmatically construct dive plans, evaluate them, and run multiple plans through programmatic constructs like loops.
-		Having full javascript programmatic capability allows you to run plans, get segments, reuse segments, and check for conditions.</p>
-		
 		<p>Maintained by <strong><a href="http://archisgore.com" title="Archis Gore" target="_blank">Archis Gore</a> </strong></p>
-	
+		<p>You can haz source code! <a href="https://github.com/archisgore/online-deco-console" title="online programmatic javascript dive planner">Online Dive Planner console github repo</a>.</p>
+	</div>
 
-		<h3>Features</h3>
-	
-		<ul>
-			<li>Up/down command history (like terminal), with localStorage saving/persistence</li>
-			<li>Option to evaluate all commands inside a hidden <code>&lt;iframe&gt;</code> (blocking access to global window scope) with a script loader to inject your libraries of choice</li>
-			<li>Basic syntax highlighting for errors and variable types
-			<li>Special commands (like <code>:help</code>, <code>:clear</code> and <code>:load</code>)</li>
-			<li>Special pre-populated object called "dive" from which algorithms/plans can be created.</li>
-		</ul>
-	
+<!-- Scripts -->
+	<script src="http://cdn.alloyui.com/3.0.1/aui/aui-min.js"></script>
+    <script src="src/scuba-dive.browserified.js"></script>
 
-		<h3>Download / Fork</h3>
-		<p>You can check out the latest code from the <a href="https://github.com/archisgore/online-deco-console" title="online programmatic javascript dive planner">Online Dive Planner console github repo</a>.</p>
-
-	<!-- Templates -->
-	
-	<!-- The sandbox template: -->
-	<script type="text/template" id="tplSandbox">
-		<pre class="output"></pre>
-		<div class="input">
-			<textarea rows="1" placeholder="<%= placeholder %>"></textarea>
-		</div>
-	</script>
-
-	<!-- The command/result template (NB whitespace/line breaks matter inside <pre> tag): -->
-	<script type="text/template" id="tplCommand"><% if (! _hidden) { %><span class="command"><%= command %></span>
-<span class="prefix"><%= this.resultPrefix %></span><span class="<%= _class %>"><%= result %></span>
-<% } %></script>
-
-
-	<!-- Scripts -->
-
-	<!-- Underscore, Backbone, backbone-localStorage, jQuery -->
-	<script src="src/libs/underscore.min.js"></script>
-	<script src="src/libs/backbone.min.js"></script>
-	<script src="src/libs/backbone-localStorage.min.js"></script>
-	<script src="src/libs/jquery.min.js"></script>
-
-	<!-- Some extras for the demo: -->
-	<script src="demo-resources/js/lettering.js"></script>
-	<script src="demo-resources/js/prettify.js"></script>
-	<script src="demo-resources/js/DAT.GUI.min.js"></script>
-
-	<!-- The JS Sandbox Console script (requires underscore, backbone and jquery): -->
-	<script src="src/sandbox-console.js"></script>
-	<script src="src/scuba-dive.browserified.js"></script>
-	
-	<!-- When ready, create the model and view -->
 	<script type="text/javascript">
-		var dive = require("/scuba-dive.js");
-		jQuery(document).ready(function($) {
-			// Create the sandbox:
-			window.sandbox = new Sandbox.View({
-				el : $('#sandbox'),
-				model : new Sandbox.Model()
-			});
-			
-			// Lettering.js:
-			$('h1').add('h2').add('h3').lettering();
 
-			// prettify code blocks:
-			prettyPrint();
+        var dive = require("/scuba-dive.js");
 
-			// GUI demo controls:
-			DAT.GUI.autoPlace = false;
-			DAT.GUI.supressHotKeys = true;
+        var consoleShim = {
+            log: function (m) {
+                this.capturedText = this.capturedText + '\n' + m;
+            },
+            capturedText: ""
+        };
 
-			window.gui = new DAT.GUI();
+        function Evaluator(console) {
+            var that = this;
 
-			gui.name('Commands to try out');
-			gui.close();
+            that.evalHelper = function (str) {
+                that.evalHelper = function (str) {
+                    try {
+                        return JSON.stringify(eval(str));
+                    } catch (e) {
+                        return e.toString();
+                    }
+                };
+            };
+        }
+        Evaluator.prototype.evaluate = function (str) {
+            return this.evalHelper(str);
+        };
 
-			$(gui.domElement).css({
-				position:"absolute",
-				top:0,
-				right:-10
-			}).appendTo('body');
+        var evaluator = new Evaluator(consoleShim);
 
-			var ndlComputeString = "var buhlmann = dive.deco.buhlmann();\nvar newPlan = new buhlmann.plan(buhlmann.ZH16BTissues);\nnewPlan.addBottomGas(\"air\", 0.21, 0.0);\nvar gradientFactor = 1.5; //This was choosen to closely match PADI dive tables.\nndl = newPlan.ndl(dive.feetToMeters(140), \"air\", gradientFactor);\n\"No deco limit for 140 feet, on air is \" + ndl + \" minutes\";";
-			var decoComputeString = "var buhlmann = dive.deco.buhlmann();\nvar plan = new buhlmann.plan(buhlmann.ZH16BTissues);\nplan.addBottomGas(\"2135\", 0.21, 0.35);\nplan.addDecoGas(\"50%\", 0.50, 0);\nplan.addDecoGas(\"Oxygen 100%\", 1.0, 0.0);\nplan.addDepthChange(0, dive.feetToMeters(150), \"2135\", 5);\nplan.addFlat(dive.feetToMeters(150), \"2135\", 25);\nvar decoPlan = plan.calculateDecompression(false, 0.2, 0.8, 1.6, 30);\n\"Complete dive profile, including decompression, for these parameters is: \\n\" + JSON.stringify(decoPlan, null, 2);";
+		YUI().use(
+				'aui-tabview',
+				function(Y) {
+					new Y.TabView(
+							{
+								srcNode: '#topLevelTabs'
+							}
+					).render();
+				}
+		);
 
-			// Some custom callback functions for dat.gui:
-			sandbox.custom1 = function() {  sandbox.currentHistory = ":help"; sandbox.update(); sandbox.textarea.focus(); };
-			sandbox.custom2 = function() {  sandbox.currentHistory = ":clear"; sandbox.update(); sandbox.textarea.focus(); };
-			sandbox.ndlCompute = function() {  sandbox.currentHistory = ndlComputeString; sandbox.update(); sandbox.textarea.focus(); };
-			sandbox.decoCompute = function() {  sandbox.currentHistory = decoComputeString; sandbox.update(); sandbox.textarea.focus(); };
+        YUI().use(
+                'aui-ace-editor',
+                function(Y) {
+                    var editor = new Y.AceEditor(
+                            {
+                                boundingBox: '#javascriptEditor',
+                                height: '200',
+                                value: '',
+                                width: '900',
+                                mode: "javascript",
+                                enableBasicAutocompletion: true
+                            }
+                    ).render();
 
-			gui.add(sandbox, 'custom1').name('Show <code>:help</code> menu');
-			gui.add(sandbox, 'custom2').name('<code>:clear</code> the command history');
-			gui.add(sandbox, 'ndlCompute').name('Compute a sample No-Deco limit.');
-			gui.add(sandbox, 'decoCompute').name('Compute a complex decompression plan.');
+                    var executeEditorButton = Y.one("#executeFromEditor");
+                    var jsResultsText = Y.one("#javascriptEditorResultsText");
+                    var jsConsoleOutputText = Y.one("#javascriptEditorConsoleOutputText");
+                    executeEditorButton.on(
+                            'click',
+                            function(event) {
+                                var editorjs = editor.get("value");
+                                var result = evaluator.evaluate(editorjs);
+                                jsResultsText.set("innerText", result);
+                                jsConsoleOutputText.set("innerText", consoleShim.capturedText);
+                                consoleShim.capturedText = "";
+                            }
+                    );
 
-			gui.open();
+                }
+        );
 
-			sandbox.model.load("src/scuba-dive.browserified.js");
+        YUI().use(
+                'aui-button',
+                function(Y) {
+                    new Y.Button(
+                            {
+                                icon: 'icon-print',
+                                iconAlign: 'left',
+                                label: 'Execute Code',
+                                srcNode: '#executeFromEditor'
+                            }
+                    ).render();
 
-			// twitter:
-			(function(d, t) {
-				var g = d.createElement(t),
-					s = d.getElementsByTagName(t)[0];
-				g.async = true;
-				g.src = 'http://platform.twitter.com/widgets.js';
-				s.parentNode.insertBefore(g, s);
-			})(document, 'script');
+                }
+        );
 
-		});
 	</script>
-
 </body>
 </html>
