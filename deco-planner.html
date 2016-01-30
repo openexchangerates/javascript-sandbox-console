@@ -41,12 +41,20 @@
 
 			<div class="tab-content">
 				<div id="tab-gui-planner" class="tab-pane">
+                    <div id="bottomGassesTable" style="display:inline-block; vertical-align: top;" ></div>
+                    <div id="decoGassesTable" style="display:inline-block; vertical-align: top;"></div>
+                    <div id="Other settings" style="display:inline-block; vertical-align: top;">
+                        <button id="addBottomGas"></button>
+                        <button id="addDecoGas"></button>
+                        <button id="addDiveSegment"></button>
+                    </div>
+                    <div id="diveSegmentsTable"></div>
 				</div>
 				<div id="tab-javascript-editor">
 					<div id="javascriptEditor"></div>
                     <button id="executeFromEditor"></button>
 
-                    <pre id="javascriptEditorOutputScrollNode" style="overflow-y: scroll; height: 300px">
+                    <div id="javascriptEditorOutputScrollNode" style="overflow-y: scroll; height: 300px">
                         <h4 id="javascriptEditorResults">Results</h4>
                         <pre id="javascriptEditorResultsText"></pre>
                         <h4 id="javascriptEditorOutput">Console Output</h4>
@@ -63,6 +71,11 @@
 		<p>Maintained by <strong><a href="http://archisgore.com" title="Archis Gore" target="_blank">Archis Gore</a> </strong></p>
 		<p>You can haz source code! <a href="https://github.com/archisgore/online-deco-console" title="online programmatic javascript dive planner">Online Dive Planner console github repo</a>.</p>
 	</div>
+
+
+<div class="yui3-skin-sam">
+    <div id="getGasModal"></div>
+</div>
 
 <!-- Scripts -->
 	<script src="http://cdn.alloyui.com/3.0.1/aui/aui-min.js"></script>
@@ -152,9 +165,183 @@
                             }
                     ).render();
 
+                    new Y.Button(
+                            {
+                                icon: 'icon-print',
+                                iconAlign: 'left',
+                                label: 'Add a Bottom Mix',
+                                srcNode: '#addBottomGas'
+                            }
+                    ).render();
+                    new Y.Button(
+                            {
+                                icon: 'icon-print',
+                                iconAlign: 'left',
+                                label: 'Add a Deco Mix',
+                                srcNode: '#addDecoGas'
+                            }
+                    ).render();
+                    new Y.Button(
+                            {
+                                icon: 'icon-print',
+                                iconAlign: 'left',
+                                label: 'Add Dive Segment',
+                                srcNode: '#addDiveSegment'
+                            }
+                    ).render();
+
+
+                    Y.one('#addBottomGas').on(
+                            'click',
+                            function() {
+                                var val = getGasSelection();
+                            }
+                    );
+                    Y.one('#addDecoGas').on(
+                            'click',
+                            function() {
+                                var val = getGasSelection();
+                            }
+                    );
                 }
         );
 
+
+        YUI().use(
+                'aui-datatable',
+                function(Y) {
+                    var bottomGassesColumns = ['name', 'fO2', 'fHe'];
+
+                    var bottomGassesData = [
+                        {name: "32%", fO2: 0.32, fHe: 0},
+                        {name: "30/30", fO2: 0.30, fHe: 0.30},
+                        {name: "21/35", fO2: 0.21, fHe: 0.35},
+                        {name: "18/45", fO2: 0.18, fHe: 0.45},
+                        {name: "15/55", fO2: 0.15, fHe: 0.55},
+                        {name: "10/70", fO2: 0.10, fHe: 0.70}
+                    ];
+
+                    new Y.DataTable.Base(
+                            {
+                                columnset: bottomGassesColumns,
+                                recordset: bottomGassesData
+                            }
+                    ).render('#bottomGassesTable');
+
+
+
+                    var decoGassesColumns = ['name', 'fO2', 'fHe'];
+
+                    var decoGassesData = [
+                        {name: "Oxygen 100%", fO2: 1.0, fHe: 0},
+                        {name: "50%", fO2: 0.50, fHe: 0.00},
+                        {name: "21/35", fO2: 0.21, fHe: 0.35},
+                    ];
+
+                    new Y.DataTable.Base(
+                            {
+                                columnset: decoGassesColumns,
+                                recordset: decoGassesData
+                            }
+                    ).render('#decoGassesTable');
+                }
+        );
+
+
+        function getGasSelection() {
+
+
+            YUI().use(
+                    'aui-modal',
+                    function (Y) {
+                        var modal = new Y.Modal(
+                                {
+                                    bodyContent: 'Please Enter your Gas Details: <br>Gas Name: <input id="gasName"/></br>Select Oxygen Percentage:<input id="fO2" class="pagination pagination-large"/></br>Select Helium Percentage:<input id="fHe" class="pagination pagination-large"/>',
+                                    centered: true,
+                                    destroyOnHide: false,
+                                    headerContent: '<h3>Enter New Gas</h3>',
+                                    modal: true,
+                                    render: '#getGasModal',
+                                    resizable: {
+                                        handles: 'b, r'
+                                    },
+                                    visible: true,
+                                    width: 450
+                                }
+                        ).render();
+
+                        YUI().use(
+                                'aui-pagination',
+                                function(Y) {
+                                    var fO2 = new Y.Pagination(
+                                            {
+                                                after: {
+                                                    changeRequest: function(event) {
+                                                        console.log(
+                                                                'page:', event.state.page,
+                                                                'getOffsetPageNumber:', this.getOffsetPageNumber()
+                                                        );
+                                                    }
+                                                },
+                                                boundingBox: '#fO2',
+                                                offset: 32,
+                                                page: 1,
+                                                strings: {
+                                                    next: '»',
+                                                    prev: '«'
+                                                },
+                                                total: 100
+                                            }
+                                    ).render();
+
+                                    var fHe = new Y.Pagination(
+                                            {
+                                                after: {
+                                                    changeRequest: function(event) {
+                                                        console.log(
+                                                                'page:', event.state.page,
+                                                                'getOffsetPageNumber:', this.getOffsetPageNumber()
+                                                        );
+                                                    }
+                                                },
+                                                boundingBox: '#fHe',
+                                                offset: 0,
+                                                page: 1,
+                                                strings: {
+                                                    next: '»',
+                                                    prev: '«'
+                                                },
+                                                total: 100
+                                            }
+                                    ).render();
+                        });
+
+                        modal.addToolbar(
+                                [
+                                    {
+                                        label: 'Cancel',
+                                        on: {
+                                            click: function () {
+                                                modal.hide();
+                                            }
+                                        }
+                                    },
+                                    {
+                                        label: 'Okay',
+                                        on: {
+                                            click: function () {
+                                                //Validate gas
+                                                
+                                                alert('Just an example, there will be no printing here.');
+                                            }
+                                        }
+                                    }
+                                ]
+                        );
+
+                    }
+            );
+        }
 	</script>
 </body>
 </html>
