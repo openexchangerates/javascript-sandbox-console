@@ -19,6 +19,7 @@
 	   -moz-box-shadow:none;
 	        box-shadow:none;
 }
+
 #sandbox {
 	background:#333;
 	color: #ccc;
@@ -40,6 +41,7 @@
 	padding:0;
 	margin:0 0 10px;
 	border:0 none;
+	background: #333;
 }
 #sandbox pre.output span           { color:#f7f7f7; }
 #sandbox pre.output span.command   { color:#ccc; }

@@ -6,7 +6,12 @@
 	<meta name="description" content="Online web-based REPL Javascript programmatic scuba diving decompression planner." />
 	<meta name="keywords" content="javascript, console, sandbox, repl, scuba diving, buhlmann, programmatic, decompression" />
 	<link rel="canonical" href="http://deco-planner.archisgore.com" />
+
 	<link href="http://cdn.alloyui.com/3.0.1/aui-css/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Stylesheet -->
+    <link href="src/sandbox.css" rel="stylesheet"/>
+
 </head>
 
 <body>
@@ -75,6 +80,10 @@
 				</div>
 
 				<div id="tab-repl-console" class="tab-pane">
+
+
+                    <div id="sandbox">sandbox console loading...</div>
+
 				</div>
 			</div>
 
@@ -91,10 +100,12 @@
 </div>
 
 <!-- Scripts -->
-	<script src="http://cdn.alloyui.com/3.0.1/aui/aui-min.js"></script>
-    <script src="src/scuba-dive.browserified.js"></script>
 
-	<script type="text/javascript">
+
+<script src="http://cdn.alloyui.com/3.0.1/aui/aui-min.js"></script>
+<script src="src/scuba-dive.browserified.js"></script>
+
+<script type="text/javascript">
 
         var dive = require("/scuba-dive.js");
 
@@ -104,6 +115,7 @@
             },
             capturedText: ""
         };
+
 
         function Evaluator(console) {
             var that = this;
@@ -123,6 +135,74 @@
         };
 
         var evaluator = new Evaluator(consoleShim);
+
+        evaluator.evaluate("var a=5;"); //give it a nudge
+
+        function populateEditorWithDivePlan(Y) {
+            //generate javascript text for dive plan
+            var jsText = 'var buhlmann = dive.deco.buhlmann();\n' +
+                    'var plan = new buhlmann.plan(buhlmann.ZH16BTissues);\n';
+
+            //add bottom gasses
+            var bottomGasses = bottomGassesTable.get("recordset");
+            for (var gasIndex in bottomGasses) {
+                var bottomGas = bottomGasses[gasIndex];
+                var bottomGassesLine = 'plan.addBottomGas("' + bottomGas.name + '", ' + bottomGas.fO2  + ', ' + bottomGas.fHe + ');\n';
+                jsText = jsText + bottomGassesLine;
+            }
+
+            //add deco gasses
+            var decoGasses = decoGassesTable.get("recordset");
+            for (var gasIndex in decoGasses) {
+                var decoGas = decoGasses[gasIndex];
+                var decoGassesLine = 'plan.addDecoGas("' + decoGas.name + '", ' + decoGas.fO2  + ', ' + decoGas.fHe + ');\n';
+                jsText = jsText + decoGassesLine;
+            }
+
+            //add segments
+            var diveSegments = diveSegmentsTable.get("recordset");
+            for (var segmentIndex in diveSegments) {
+                var diveSegment = diveSegments[segmentIndex];
+                var diveSegmentLine = 'plan.addDepthChange(' +diveSegment.startDepth+ ', ' +diveSegment.endDepth+ ', "' + diveSegment.gasName+ '", ' +diveSegment.time+');\n';
+                jsText = jsText + diveSegmentLine;
+            }
+
+            var gfLow = parseFloat(Y.one("#gfLow").get("value"));
+            if (isNaN(gfLow)) {
+                alert("gfLow has to be a number.");
+                return
+            }
+            var gfHigh = parseFloat(Y.one("#gfHigh").get("value"));
+            if (isNaN(gfHigh)) {
+                alert("gfHigh has to be a number.");
+                return
+            }
+            var maxppO2 = parseFloat(Y.one("#ppO2").get("value"));
+            if (isNaN(maxppO2)) {
+                alert("maxppO2 has to be a number.");
+                return
+            }
+            var maxEnd = parseFloat(Y.one("#end").get("value"));
+            if (isNaN(maxEnd)) {
+                alert("gmaxEndfLow has to be a number.");
+                return
+            }
+
+            //add deco line
+            jsText = jsText + 'plan.calculateDecompression(false, ' + gfLow + ', ' + gfHigh + ', ' + maxppO2 + ', ' + maxEnd+');';
+            jsEditor.set("value", jsText);
+            jsEditor.render();
+        }
+
+        function executeCodeInEditor(Y) {
+            var jsResultsText = Y.one("#javascriptEditorResultsText");
+            var jsConsoleOutputText = Y.one("#javascriptEditorConsoleOutputText");
+            var editorjs = jsEditor.get("value");
+            var result = evaluator.evaluate(editorjs);
+            jsResultsText.set("innerText", result);
+            jsConsoleOutputText.set("innerText", consoleShim.capturedText);
+            consoleShim.capturedText = "";
+        }
 
         var topLevelTabs;
 		YUI().use(
@@ -162,20 +242,6 @@
                                 enableBasicAutocompletion: true
                             }
                     ).render();
-
-                    var executeEditorButton = Y.one("#executeFromEditor");
-                    var jsResultsText = Y.one("#javascriptEditorResultsText");
-                    var jsConsoleOutputText = Y.one("#javascriptEditorConsoleOutputText");
-                    executeEditorButton.on(
-                            'click',
-                            function(event) {
-                                var editorjs = jsEditor.get("value");
-                                var result = evaluator.evaluate(editorjs);
-                                jsResultsText.set("innerText", result);
-                                jsConsoleOutputText.set("innerText", consoleShim.capturedText);
-                                consoleShim.capturedText = "";
-                            }
-                    );
 
                 }
         );
@@ -255,43 +321,7 @@
                     Y.one('#generateJsPlan').on(
                         'click',
                             function() {
-                                //generate javascript text for dive plan
-                                var jsText = 'var buhlmann = dive.deco.buhlmann();\n' +
-                                        'var plan = new buhlmann.plan(buhlmann.ZH16BTissues);\n';
-
-                                //add bottom gasses
-                                var bottomGasses = bottomGassesTable.get("recordset");
-                                for (var gasIndex in bottomGasses) {
-                                    var bottomGas = bottomGasses[gasIndex];
-                                    var bottomGassesLine = 'plan.addBottomGas("' + bottomGas.name + '", ' + bottomGas.fO2  + ', ' + bottomGas.fHe + ');\n';
-                                    jsText = jsText + bottomGassesLine;
-                                }
-
-                                //add deco gasses
-                                var decoGasses = decoGassesTable.get("recordset");
-                                for (var gasIndex in decoGasses) {
-                                    var decoGas = decoGasses[gasIndex];
-                                    var decoGassesLine = 'plan.addBottomGas("' + decoGas.name + '", ' + decoGas.fO2  + ', ' + decoGas.fHe + ');\n';
-                                    jsText = jsText + decoGassesLine;
-                                }
-
-                                //add segments
-                                var diveSegments = diveSegmentsTable.get("recordset");
-                                for (var segmentIndex in diveSegments) {
-                                    var diveSegment = diveSegments[segmentIndex];
-                                    var diveSegmentLine = 'plan.addDepthChange(' +diveSegment.fromDepth+ ', ' +diveSegment.toDepth+ ', "' + diveSegment.gasName+ '", ' +diveSegment.time+');\n';
-                                    jsText = jsText + diveSegmentLine;
-                                }
-
-                                var gfLow = Y.one("#gfLow").get("value");
-                                var gfHigh = Y.one("#gfHigh").get("value");
-                                var maxppO2 = Y.one("#ppO2").get("value");
-                                var maxEnd = Y.one("#end").get("value");
-
-                                //add deco line
-                                jsText = jsText + 'var decoPlan = plan.calculateDecompression(false, ' + gfLow + ', ' + gfHigh + ', ' + maxppO2 + ', ' + maxEnd+');';
-                                jsEditor.set("value", jsText);
-                                jsEditor.render();
+                                populateEditorWithDivePlan(Y);
                                 topLevelTabs.selectChild(1);
                             }
                     );
@@ -299,7 +329,29 @@
                     Y.one('#calculateDeco').on(
                             'click',
                             function() {
+                                populateEditorWithDivePlan(Y);
+                                executeCodeInEditor(Y);
+                                var resultsText = Y.one("#javascriptEditorResultsText").get("innerText");
+                                //alert(resultsText);
+                                var results = JSON.parse(resultsText);
+                                //alert(results);
 
+                                //now repopulate segments back in the segment table
+                                //add segments
+                                var diveSegments = []
+                                for (var resultIndex in results) {
+                                    var diveSegment = results[resultIndex];
+                                    diveSegments.push(diveSegment);
+                                }
+                                diveSegmentsTable.set('recordset', diveSegments);
+                                diveSegmentsTable.render();
+                            }
+                    );
+
+                    Y.one("#executeFromEditor").on(
+                            'click',
+                            function(event) {
+                                executeCodeInEditor(Y);
                             }
                     );
                 }
@@ -350,7 +402,7 @@
                             }
                     ).render('#decoGassesTable');
 
-                    var diveSegmentsColumns = ['fromDepth', 'toDepth', 'gasName', 'time'];
+                    var diveSegmentsColumns = ['startDepth', 'endDepth', 'gasName', 'time'];
 
                     var diveSegments = [];
                     diveSegmentsTable = new Y.DataTable.Base(
@@ -468,7 +520,7 @@
                         //alert(bottomGasSelectionText);
                         var modal = new Y.Modal(
                                 {
-                                    bodyContent: 'Please Enter your Dive Segment Details: <br>Start Depth (Meters): <input id="diveSegmentFromDepth"/></br>End Depth(Meters):<input id="diveSegmentToDepth"/></br>Select Bottom Gas:' + bottomGasSelectionText + '</br>Enter the amount of time (minutes):<input id="diveSegmentTime">',
+                                    bodyContent: 'Please Enter your Dive Segment Details: <br>Start Depth (Meters): <input id="diveSegmentStartDepth"/></br>End Depth(Meters):<input id="diveSegmentEndDepth"/></br>Select Bottom Gas:' + bottomGasSelectionText + '</br>Enter the amount of time (minutes):<input id="diveSegmentTime">',
                                     centered: true,
                                     destroyOnHide: true,
                                     headerContent: '<h3>Enter New Gas</h3>',
@@ -497,15 +549,15 @@
                                         on: {
                                             click: function () {
                                                 //Validate gas
-                                                var fromDepth = parseFloat(Y.one("#diveSegmentFromDepth").get("value"));
-                                                var toDepth = parseFloat(Y.one("#diveSegmentToDepth").get("value"));
-                                                var gasName = parseFloat(Y.one("#diveSegmentBottomGasSelection").get("value"));
+                                                var startDepth = parseFloat(Y.one("#diveSegmentStartDepth").get("value"));
+                                                var endDepth = parseFloat(Y.one("#diveSegmentEndDepth").get("value"));
+                                                var gasName = Y.one("#diveSegmentBottomGasSelection").get("value");
                                                 var time = parseFloat(Y.one("#diveSegmentTime").get("value"));
-                                                if (isNaN(fromDepth) || fromDepth < 0) {
+                                                if (isNaN(startDepth) || startDepth < 0) {
                                                     alert("Start Depth must be greater than or equal to 0 meters.");
                                                     return;
                                                 }
-                                                if (isNaN(toDepth) || toDepth < 0) {
+                                                if (isNaN(endDepth) || endDepth < 0) {
                                                     alert("End Depth must be greater than or equal to 0 meters.");
                                                     return;
                                                 }
@@ -514,7 +566,7 @@
                                                     return;
                                                 }
                                                 var diveSegments = diveSegmentsTable.get("recordset");
-                                                diveSegments.push({fromDepth: fromDepth, toDepth: toDepth, gasName: gasName, time: time});
+                                                diveSegments.push({startDepth: startDepth, endDepth: endDepth, gasName: gasName, time: time});
                                                 diveSegmentsTable.set("recordset", diveSegments);
                                                 diveSegmentsTable.render();
                                                 modal.hide();
@@ -529,5 +581,51 @@
         }
 
     </script>
+
+<!-- Templates -->
+
+<!-- The sandbox template: -->
+<script type="text/template" id="tplSandbox">
+    <pre class="output"></pre>
+    <div class="input">
+        <textarea rows="1" placeholder="<%= placeholder %>"></textarea>
+    </div>
+</script>
+
+<!-- The command/result template (NB whitespace/line breaks matter inside <pre> tag): -->
+<script type="text/template" id="tplCommand"><% if (! _hidden) { %><span class="command"><%= command %></span>
+<span class="prefix"><%= this.resultPrefix %></span><span class="<%= _class %>"><%= result %></span>
+<% } %></script>
+
+
+<!-- Scripts -->
+
+<!-- Underscore, Backbone, backbone-localStorage, jQuery -->
+<script src="src/libs/underscore.min.js"></script>
+<script src="src/libs/backbone.min.js"></script>
+<script src="src/libs/backbone-localStorage.min.js"></script>
+<script src="src/libs/jquery.min.js"></script>
+
+<!-- Some extras for the demo: -->
+<script src="demo-resources/js/lettering.js"></script>
+<script src="demo-resources/js/prettify.js"></script>
+<script src="demo-resources/js/DAT.GUI.min.js"></script>
+
+<!-- The JS Sandbox Console script (requires underscore, backbone and jquery): -->
+<script src="src/sandbox-console.js"></script>
+
+<!-- When ready, create the model and view -->
+<script type="text/javascript">
+    jQuery(document).ready(function($) {
+        // Create the sandbox:
+        window.sandbox = new Sandbox.View({
+            el : $('#sandbox'),
+            model : new Sandbox.Model()
+        });
+        
+    });
+</script>
+
+
 </body>
 </html>
