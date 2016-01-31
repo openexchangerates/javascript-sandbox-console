@@ -27,8 +27,9 @@
 	<h1>Online Programmatic Javascript Dive Planner (With GUI)</h1>
 
 	<h2>A javascript console to programmatically compute dive plans.</h2>
-	
-	<div class="content">
+<div class="yui3-skin-sam">
+
+<div class="content">
 
 
 		<div id="topLevelTabs">
@@ -43,12 +44,22 @@
 				<div id="tab-gui-planner" class="tab-pane">
                     <div id="bottomGassesTable" style="display:inline-block; vertical-align: top;" ></div>
                     <div id="decoGassesTable" style="display:inline-block; vertical-align: top;"></div>
-                    <div id="Other settings" style="display:inline-block; vertical-align: top;">
+                    <div id="diveSegmentsTable" style="display:inline-block; vertical-align: top;"></div>
+                    </br>
+                    <div id="otherSettings">
+                        Gf Low: <input id="gfLow" size="5" value="0.2"/>
+                        Gf High: <input id="gfHigh" size="5" value="0.8"/>
+                        ppO2 for Deco: <input id="ppO2" size="5" value="1.6"/>
+                        max END (in meters) for Deco: <input id="end" size="5" value="30"/>
+                    </div>
+                    <div id="buttons" style="display:inline-block; vertical-align: top;">
                         <button id="addBottomGas"></button>
                         <button id="addDecoGas"></button>
                         <button id="addDiveSegment"></button>
+                        </br>
+                        <button id="generateJsPlan"></button>
+                        <button id="calculateDeco"></button>
                     </div>
-                    <div id="diveSegmentsTable"></div>
 				</div>
 				<div id="tab-javascript-editor">
 					<div id="javascriptEditor"></div>
@@ -62,19 +73,21 @@
                     </div>
 
 				</div>
+
 				<div id="tab-repl-console" class="tab-pane">
 				</div>
 			</div>
 
 		</div>
 
+
+
+    <div id="getGasModal"></div>
+
 		<p>Maintained by <strong><a href="http://archisgore.com" title="Archis Gore" target="_blank">Archis Gore</a> </strong></p>
 		<p>You can haz source code! <a href="https://github.com/archisgore/online-deco-console" title="online programmatic javascript dive planner">Online Dive Planner console github repo</a>.</p>
 	</div>
 
-
-<div class="yui3-skin-sam">
-    <div id="getGasModal"></div>
 </div>
 
 <!-- Scripts -->
@@ -98,7 +111,7 @@
             that.evalHelper = function (str) {
                 that.evalHelper = function (str) {
                     try {
-                        return JSON.stringify(eval(str));
+                        return JSON.stringify(eval(str), null, 2);
                     } catch (e) {
                         return e.toString();
                     }
@@ -111,10 +124,11 @@
 
         var evaluator = new Evaluator(consoleShim);
 
+        var topLevelTabs;
 		YUI().use(
 				'aui-tabview',
 				function(Y) {
-					new Y.TabView(
+					topLevelTabs = new Y.TabView(
 							{
 								srcNode: '#topLevelTabs'
 							}
@@ -122,14 +136,27 @@
 				}
 		);
 
+        var jsEditor;
         YUI().use(
                 'aui-ace-editor',
                 function(Y) {
-                    var editor = new Y.AceEditor(
+
+                    var editorValue =
+                    'var buhlmann = dive.deco.buhlmann();\n' +
+                    'var plan = new buhlmann.plan(buhlmann.ZH16BTissues);\n' +
+                    'plan.addBottomGas("2135", 0.21, 0.35);\n' +
+                    'plan.addDecoGas("50%", 0.50, 0);\n' +
+                    'plan.addDecoGas("Oxygen 100%", 1.0, 0.0);\n' +
+                    'plan.addDepthChange(0, dive.feetToMeters(150), "2135", 5);\n' +
+                    'plan.addFlat(dive.feetToMeters(150), "2135", 25);\n' +
+                    '\n' +
+                    'plan.calculateDecompression(false, 0.2, 0.8, 1.6, 30);';
+
+                    jsEditor = new Y.AceEditor(
                             {
                                 boundingBox: '#javascriptEditor',
                                 height: '200',
-                                value: '',
+                                value: editorValue,
                                 width: '900',
                                 mode: "javascript",
                                 enableBasicAutocompletion: true
@@ -142,7 +169,7 @@
                     executeEditorButton.on(
                             'click',
                             function(event) {
-                                var editorjs = editor.get("value");
+                                var editorjs = jsEditor.get("value");
                                 var result = evaluator.evaluate(editorjs);
                                 jsResultsText.set("innerText", result);
                                 jsConsoleOutputText.set("innerText", consoleShim.capturedText);
@@ -191,25 +218,101 @@
                     ).render();
 
 
+                    new Y.Button(
+                            {
+                                label: 'Generate Javascript Code',
+                                srcNode: '#generateJsPlan'
+                            }
+                    ).render();
+
+                    new Y.Button(
+                            {
+                                label: 'Calculate Decompression',
+                                srcNode: '#calculateDeco'
+                            }
+                    ).render();
+
                     Y.one('#addBottomGas').on(
                             'click',
                             function() {
-                                var val = getGasSelection();
+                                var val = addGasSelectionToTable(bottomGassesTable);
                             }
                     );
                     Y.one('#addDecoGas').on(
                             'click',
                             function() {
-                                var val = getGasSelection();
+                                var val = addGasSelectionToTable(decoGassesTable);
+                            }
+                    );
+
+                    Y.one('#addDiveSegment').on(
+                            'click',
+                            function() {
+                                addDiveSegment();
+                            }
+                    );
+
+                    Y.one('#generateJsPlan').on(
+                        'click',
+                            function() {
+                                //generate javascript text for dive plan
+                                var jsText = 'var buhlmann = dive.deco.buhlmann();\n' +
+                                        'var plan = new buhlmann.plan(buhlmann.ZH16BTissues);\n';
+
+                                //add bottom gasses
+                                var bottomGasses = bottomGassesTable.get("recordset");
+                                for (var gasIndex in bottomGasses) {
+                                    var bottomGas = bottomGasses[gasIndex];
+                                    var bottomGassesLine = 'plan.addBottomGas("' + bottomGas.name + '", ' + bottomGas.fO2  + ', ' + bottomGas.fHe + ');\n';
+                                    jsText = jsText + bottomGassesLine;
+                                }
+
+                                //add deco gasses
+                                var decoGasses = decoGassesTable.get("recordset");
+                                for (var gasIndex in decoGasses) {
+                                    var decoGas = decoGasses[gasIndex];
+                                    var decoGassesLine = 'plan.addBottomGas("' + decoGas.name + '", ' + decoGas.fO2  + ', ' + decoGas.fHe + ');\n';
+                                    jsText = jsText + decoGassesLine;
+                                }
+
+                                //add segments
+                                var diveSegments = diveSegmentsTable.get("recordset");
+                                for (var segmentIndex in diveSegments) {
+                                    var diveSegment = diveSegments[segmentIndex];
+                                    var diveSegmentLine = 'plan.addDepthChange(' +diveSegment.fromDepth+ ', ' +diveSegment.toDepth+ ', "' + diveSegment.gasName+ '", ' +diveSegment.time+');\n';
+                                    jsText = jsText + diveSegmentLine;
+                                }
+
+                                var gfLow = Y.one("#gfLow").get("value");
+                                var gfHigh = Y.one("#gfHigh").get("value");
+                                var maxppO2 = Y.one("#ppO2").get("value");
+                                var maxEnd = Y.one("#end").get("value");
+
+                                //add deco line
+                                jsText = jsText + 'var decoPlan = plan.calculateDecompression(false, ' + gfLow + ', ' + gfHigh + ', ' + maxppO2 + ', ' + maxEnd+');';
+                                jsEditor.set("value", jsText);
+                                jsEditor.render();
+                                topLevelTabs.selectChild(1);
+                            }
+                    );
+
+                    Y.one('#calculateDeco').on(
+                            'click',
+                            function() {
+
                             }
                     );
                 }
         );
 
+        var decoGassesTable;
+        var bottomGassesTable;
+        var diveSegmentsTable;
 
         YUI().use(
                 'aui-datatable',
                 function(Y) {
+
                     var bottomGassesColumns = ['name', 'fO2', 'fHe'];
 
                     var bottomGassesData = [
@@ -221,12 +324,15 @@
                         {name: "10/70", fO2: 0.10, fHe: 0.70}
                     ];
 
-                    new Y.DataTable.Base(
+
+                    bottomGassesTable = new Y.DataTable.Base(
                             {
                                 columnset: bottomGassesColumns,
-                                recordset: bottomGassesData
+                                recordset: bottomGassesData,
+                                caption: ""
                             }
                     ).render('#bottomGassesTable');
+
 
 
 
@@ -237,18 +343,27 @@
                         {name: "50%", fO2: 0.50, fHe: 0.00},
                         {name: "21/35", fO2: 0.21, fHe: 0.35},
                     ];
-
-                    new Y.DataTable.Base(
+                    decoGassesTable = new Y.DataTable.Base(
                             {
                                 columnset: decoGassesColumns,
                                 recordset: decoGassesData
                             }
                     ).render('#decoGassesTable');
+
+                    var diveSegmentsColumns = ['fromDepth', 'toDepth', 'gasName', 'time'];
+
+                    var diveSegments = [];
+                    diveSegmentsTable = new Y.DataTable.Base(
+                            {
+                                columnset: diveSegmentsColumns,
+                                recordset: diveSegments
+                            }
+                    ).render('#diveSegmentsTable');
                 }
         );
 
 
-        function getGasSelection() {
+        function addGasSelectionToTable(table) {
 
 
             YUI().use(
@@ -256,9 +371,9 @@
                     function (Y) {
                         var modal = new Y.Modal(
                                 {
-                                    bodyContent: 'Please Enter your Gas Details: <br>Gas Name: <input id="gasName"/></br>Select Oxygen Percentage:<input id="fO2" class="pagination pagination-large"/></br>Select Helium Percentage:<input id="fHe" class="pagination pagination-large"/>',
+                                    bodyContent: 'Please Enter your Gas Details: <br>Gas Name: <input id="gasName"/></br>Select Oxygen Percentage:<input id="fO2"/></br>Select Helium Percentage:<input id="fHe"/>',
                                     centered: true,
-                                    destroyOnHide: false,
+                                    destroyOnHide: true,
                                     headerContent: '<h3>Enter New Gas</h3>',
                                     modal: true,
                                     render: '#getGasModal',
@@ -270,51 +385,102 @@
                                 }
                         ).render();
 
-                        YUI().use(
-                                'aui-pagination',
-                                function(Y) {
-                                    var fO2 = new Y.Pagination(
-                                            {
-                                                after: {
-                                                    changeRequest: function(event) {
-                                                        console.log(
-                                                                'page:', event.state.page,
-                                                                'getOffsetPageNumber:', this.getOffsetPageNumber()
-                                                        );
-                                                    }
-                                                },
-                                                boundingBox: '#fO2',
-                                                offset: 32,
-                                                page: 1,
-                                                strings: {
-                                                    next: '»',
-                                                    prev: '«'
-                                                },
-                                                total: 100
+                        modal.addToolbar(
+                                [
+                                    {
+                                        label: 'Cancel',
+                                        on: {
+                                            click: function () {
+                                                modal.hide();
                                             }
-                                    ).render();
+                                        }
+                                    },
+                                    {
+                                        label: 'Okay',
+                                        on: {
+                                            click: function () {
 
-                                    var fHe = new Y.Pagination(
-                                            {
-                                                after: {
-                                                    changeRequest: function(event) {
-                                                        console.log(
-                                                                'page:', event.state.page,
-                                                                'getOffsetPageNumber:', this.getOffsetPageNumber()
-                                                        );
+                                                var data = table.get("recordset");
+
+                                                //Validate gas
+                                                var gasName = Y.one("#gasName").get("value");
+                                                var fO2 = parseInt(Y.one("#fO2").get("value"));
+                                                var fHe = parseInt(Y.one("#fHe").get("value"));
+                                                if (isNaN(fO2) || fO2 < 0 || fO2 > 1) {
+                                                    alert("Fraction of Oxygen must be between 0 and 1 inclusive.");
+                                                    return;
+                                                }
+                                                if (isNaN(fHe) || fHe < 0 || fHe > 1) {
+                                                    alert("Fraction of Helium must be between 0 and 1 inclusive.");
+                                                    return;
+                                                }
+                                                if (fO2 + fHe > 1) {
+                                                    alert("Fraction of Oxygen and Helium combined, cannot exceed 1, when added together.");
+                                                    return;
+                                                }
+
+                                                //alert(data);
+                                                for (var gasIndex = 0; gasIndex < data.length; gasIndex++) {
+                                                    //alert(JSON.stringify(gas) + " gasIndex:" + gasIndex);
+                                                    var gas = data[gasIndex];
+                                                    if (gas.name == gasName) {
+                                                        alert("A Gas with name " + gasName + " already exists in this table. Unable to add.");
+                                                        return;
                                                     }
-                                                },
-                                                boundingBox: '#fHe',
-                                                offset: 0,
-                                                page: 1,
-                                                strings: {
-                                                    next: '»',
-                                                    prev: '«'
-                                                },
-                                                total: 100
+                                                    if (gas.fHe == fHe && gas.fO2 == fO2) {
+                                                        alert("A gas with this concentration of gasses already exists: " + gas.name);
+                                                        return;
+                                                    }
+                                                }
+
+                                                data.push({name: gasName, fO2: fO2, fHe: fHe});
+
+                                                table.set("recordset", data);
+                                                table.render();
+
+                                                modal.hide();
                                             }
-                                    ).render();
-                        });
+                                        }
+                                    }
+                                ]
+                        );
+
+                    }
+            );
+        }
+
+
+
+
+        function addDiveSegment() {
+
+            YUI().use(
+                    'aui-modal',
+                    function (Y) {
+
+                        var bottomGasses = bottomGassesTable.get("recordset");
+                        var bottomGasSelectionText = '<select id="diveSegmentBottomGasSelection">';
+                        for (var gasIndex in bottomGasses) {
+                            var bottomGas = bottomGasses[gasIndex];
+                            bottomGasSelectionText = bottomGasSelectionText + '<option value="'+bottomGas.name+'">'+bottomGas.name+'</option>';
+                        }
+                        bottomGasSelectionText = bottomGasSelectionText + "</select>";
+                        //alert(bottomGasSelectionText);
+                        var modal = new Y.Modal(
+                                {
+                                    bodyContent: 'Please Enter your Dive Segment Details: <br>Start Depth (Meters): <input id="diveSegmentFromDepth"/></br>End Depth(Meters):<input id="diveSegmentToDepth"/></br>Select Bottom Gas:' + bottomGasSelectionText + '</br>Enter the amount of time (minutes):<input id="diveSegmentTime">',
+                                    centered: true,
+                                    destroyOnHide: true,
+                                    headerContent: '<h3>Enter New Gas</h3>',
+                                    modal: true,
+                                    render: '#getGasModal',
+                                    resizable: {
+                                        handles: 'b, r'
+                                    },
+                                    visible: true,
+                                    width: 450
+                                }
+                        ).render();
 
                         modal.addToolbar(
                                 [
@@ -331,8 +497,27 @@
                                         on: {
                                             click: function () {
                                                 //Validate gas
-                                                
-                                                alert('Just an example, there will be no printing here.');
+                                                var fromDepth = parseFloat(Y.one("#diveSegmentFromDepth").get("value"));
+                                                var toDepth = parseFloat(Y.one("#diveSegmentToDepth").get("value"));
+                                                var gasName = parseFloat(Y.one("#diveSegmentBottomGasSelection").get("value"));
+                                                var time = parseFloat(Y.one("#diveSegmentTime").get("value"));
+                                                if (isNaN(fromDepth) || fromDepth < 0) {
+                                                    alert("Start Depth must be greater than or equal to 0 meters.");
+                                                    return;
+                                                }
+                                                if (isNaN(toDepth) || toDepth < 0) {
+                                                    alert("End Depth must be greater than or equal to 0 meters.");
+                                                    return;
+                                                }
+                                                if (isNaN(time) || time < 0) {
+                                                    alert("Segment time must be greater than or equal to 0 minutes.");
+                                                    return;
+                                                }
+                                                var diveSegments = diveSegmentsTable.get("recordset");
+                                                diveSegments.push({fromDepth: fromDepth, toDepth: toDepth, gasName: gasName, time: time});
+                                                diveSegmentsTable.set("recordset", diveSegments);
+                                                diveSegmentsTable.render();
+                                                modal.hide();
                                             }
                                         }
                                     }
@@ -342,6 +527,7 @@
                     }
             );
         }
-	</script>
+
+    </script>
 </body>
 </html>
