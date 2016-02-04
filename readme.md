@@ -2,12 +2,25 @@
 
 You should find this hosted on: http://deco-planner.archisgore.com/
 
-This repo combines two public-domain repos. This excellent Javascript sandbox console: https://github.com/openexchangerates/javascript-sandbox-console
+The purpose of the tool is to have an online dive planning tool that combines all the open source things out there, to build a responsive, fast, efficient and install-free planning tool. You can share dive plans with others, and more importantly, you can script dive plans, to generate profiles difficult or cumbersome to generate manually.
 
-With a browserified version of this Node.js module:
+Examples are adding many small segments to simulate a slope, or simulate curves. Or it could be running many different gas combinations to find which gasses work the best. Or it could be running different conservativism factors, to look at how conservativism affects the slope of deco.
+
+This repo combines maby public-domain repos. The main reason behind this forked franken-repo is to provide an integration point for stuff that makes no sense in the individual repos on-it's-own (for instance browserifying a script in an npm repo looks ugly, or javascript-converting a python script, looks ugly and makes no sense there.)
+
+First we start with a browserified (using the browserify tool) version of this Node.js module:
 https://github.com/nyxtom/dive
 
-When you launch this website, you get an online command-line style REPL javascript console, to compute dive plans.
+This exposes the entire module in the browser (under a global object called dive, declared thus:)
+var dive = require("/scuba-dive.js");
+
+Secondly, there's a GUI built using AlloyUI (alloyyu.com), that allows you to construct dive plans graphically.
+
+Third, these dive plans are converted into Javascript code, which is displayed in a syntax-highlighting editor, again provided by alloyUI (alloyui.com)
+
+Finally there's a REPL-console to run individual commands, taken from: https://github.com/openexchangerates/javascript-sandbox-console
+
+All the scripts are executed in your browser's main window object. So if you opened your developer tools and your own javascript console, you should be able to walk the entire object graph and use that if you'd like!
 
 Here's a few examples on how to run a dive profile:
 
@@ -21,10 +34,3 @@ var decoPlan = plan.calculateDecompression(false, 0.2, 0.8, 1.6, 30); //gradient
 
 You can configure things like gradient factor, ppO2 exposure, and maximum END.
 
-This tool is mainly intended to allow REPL-style dive planning, where you can add steps, remove steps, and compute plans programmatically. You can generate a large number of tables or validate multiple hypotheses rapidly.
-
-## TODO
-
-* Build a web-based GUI for this library so you have an online web-based deco-planner.
-* Build a D3/SVG based grapher so we can graph rate-of-change-of-deco against different variables.
-* Implement VPM in the root dive library.
