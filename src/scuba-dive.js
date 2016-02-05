@@ -2629,6 +2629,18 @@ $self.vpm = function () {
         'setpoint': 0  //Not on a CCR
       });
     }
+
+    //sort in order of switch depths
+    ascent_summary.sort(function(a, b) {
+        if (a.starting_depth > b.starting_depth) {
+            return -1;
+        } else if (a.starting_depth < b.starting_depth) {
+            return 1;
+        } else {
+            return 0;
+        }
+    });
+
     //create magical profilecode (for deco: 99)
     var deco_profile = {
       'profile_code': 99,
