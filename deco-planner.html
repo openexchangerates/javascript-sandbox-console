@@ -56,6 +56,11 @@
                         Gf High: <input id="gfHigh" size="5" value="0.8"/>
                         ppO2 for Deco: <input id="ppO2" size="5" value="1.6"/>
                         max END (in meters) for Deco: <input id="end" size="5" value="30"/>
+                        Algorithm:
+                        <select id="algorithm">
+                        <option value="buhlmann">Buhlmann (ZHL-B)</option>
+                        <option value="vpm">VPM-B</option>
+                        </select>
                     </div>
                     <div id="buttons" style="display:inline-block; vertical-align: top;">
                         <button id="addBottomGas"></button>
@@ -254,9 +259,22 @@
         }
 
         function populateEditorWithDivePlan(Y) {
+
+            var algoSelector = Y.one('#algorithm');
+            var algorithm = algoSelector.get('value');
+
             //generate javascript text for dive plan
-            var jsText = 'var buhlmann = dive.deco.buhlmann();\n' +
+            var jsText = "";
+
+            if (algorithm == "buhlmann") {
+                jsText = jsText  + 'var buhlmann = dive.deco.buhlmann();\n' +
                     'var plan = new buhlmann.plan(buhlmann.ZH16BTissues);\n';
+            } else if (algorithm == "vpm") {
+                jsText = jsText  + 'var vpm = dive.deco.vpm();\n' +
+                        'var plan = new vpm.plan();\n';
+            } else {
+                throw "Unknown Algorithm!";
+            }
 
             //add bottom gasses
             var bottomGasses = bottomGassesTable.get("recordset");
