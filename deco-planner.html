@@ -47,21 +47,7 @@
 
 			<div class="tab-content">
 				<div id="tab-gui-planner" class="tab-pane">
-                    <div id="bottomGassesTable" style="display:inline-block; vertical-align: top;" ></div>
-                    <div id="decoGassesTable" style="display:inline-block; vertical-align: top;"></div>
-                    <div id="diveSegmentsTable" style="display:inline-block; vertical-align: top;"></div>
-                    </br>
-                    <div id="otherSettings">
-                        Gf Low: <input id="gfLow" size="5" value="0.2"/>
-                        Gf High: <input id="gfHigh" size="5" value="0.8"/>
-                        ppO2 for Deco: <input id="ppO2" size="5" value="1.6"/>
-                        max END (in meters) for Deco: <input id="end" size="5" value="30"/>
-                        Algorithm:
-                        <select id="algorithm">
-                        <option value="buhlmann">Buhlmann (ZHL-B)</option>
-                        <option value="vpm">VPM-B</option>
-                        </select>
-                    </div>
+                    <hr/>
                     <div id="buttons" style="display:inline-block; vertical-align: top;">
                         <button id="addBottomGas"></button>
                         <button id="addDecoGas"></button>
@@ -70,6 +56,28 @@
                         <button id="generateJsPlan"></button>
                         <button id="calculateDeco"></button>
                     </div>
+                    <hr/>
+                    <div id="otherSettings">
+                        Gf Low: <input id="gfLow" size="5" value="0.2"/>
+                        Gf High: <input id="gfHigh" size="5" value="0.8"/>
+                        ppO2 for Deco: <input id="ppO2" size="5" value="1.6"/>
+                        max END (in meters) for Deco: <input id="end" size="5" value="30"/>
+                        Algorithm:
+                        <select id="algorithm">
+                            <option value="buhlmann">Buhlmann (ZHL-B)</option>
+                            <option value="vpm">VPM-B</option>
+                        </select>
+                    </div>
+                    <hr/>
+                    <div id="bottomGassesTable" style="display:inline-block; vertical-align: top;" ></div>
+                    <div id="decoGassesTable" style="display:inline-block; vertical-align: top;"></div>
+                    <div id="diveSegmentsTable" style="display:inline-block; vertical-align: top;"></div>
+                    <hr/>
+                    <div id="decoPlan" style="display:none; vertical-align: top;">
+                        <b>Total Time:</b><span id="totalTime"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Deco Time:</b><span id="decoTime"></span><br/>
+                        <div id="decoPlanTable" style="display:inline-block; vertical-align: top;"></div>
+                    </div>
+                    </br>
 				</div>
 				<div id="tab-javascript-editor">
 					<div id="javascriptEditor"></div>
@@ -469,15 +477,33 @@
                                 var results = JSON.parse(resultsText);
                                 //alert(results);
 
+                                var calculateTimeOverSegments = function(segArray) {
+                                    var total = 0;
+                                    for (var i = 0; i < segArray.length; i++) {
+                                        var seg = segArray[i];
+                                        total = total + seg.time;
+                                    }
+                                    return total;
+                                }
+
                                 //now repopulate segments back in the segment table
                                 //add segments
-                                var diveSegments = []
+                                var totalSegments = []
                                 for (var resultIndex in results) {
-                                    var diveSegment = results[resultIndex];
-                                    diveSegments.push(diveSegment);
+                                    var finalSegment = results[resultIndex];
+                                    totalSegments.push(finalSegment);
                                 }
-                                diveSegmentsTable.set('recordset', diveSegments);
-                                diveSegmentsTable.render();
+                                var diveSegments = diveSegmentsTable.get('recordset');
+                                var diveTime = calculateTimeOverSegments(diveSegments);
+                                var totalTime = calculateTimeOverSegments(totalSegments);
+                                var decoTime = totalTime - diveTime;
+
+                                Y.one("#decoPlan").set("style", "display:block");
+                                Y.one('#totalTime').set("innerText", (totalTime + ""));
+                                Y.one('#decoTime').set("innerText", (decoTime + ""));
+
+                                decoPlanTable.set("recordset", totalSegments);
+                                decoPlanTable.render();
                             }
                     );
 
@@ -493,7 +519,7 @@
         var decoGassesTable;
         var bottomGassesTable;
         var diveSegmentsTable;
-
+        var decoPlanTable;
 
         YUI().use(
                 'aui-datatable',
@@ -521,8 +547,8 @@
 
                     var bottomGassesColumns = [
                         {key: 'name', label: "Label"},
-                        {key: 'fO2', label: "Fraction O2"},
-                        {key: 'fHe', label: "Fraction He"},
+                        {key: 'fO2', label: "fO2"},
+                        {key: 'fHe', label: "fHe"},
                         {
                             key: "remove",
                             allowHtml: true,
@@ -556,8 +582,8 @@
 
                     var decoGassesColumns = [
                             {key: 'name', label: "Label"},
-                            {key: 'fO2', label: "Fraction O2"},
-                            {key: 'fHe', label: "Fraction He"},
+                            {key: 'fO2', label: "fO2"},
+                            {key: 'fHe', label: "fHe"},
                             {
                                 key: "remove",
                                 allowHtml: true,
@@ -583,10 +609,10 @@
                             ".yui3-datatable-data .yui3-datatable-col-remove button", decoGassesTable);
 
                     var diveSegmentsColumns = [
-                        {key: 'startDepth', label: "Starting Depth"},
-                        {key: 'endDepth', label: "Ending Depth"},
-                        {key: 'gasName', label: "Gas Used"},
-                        {key: 'time',  label: "Time (Minutes)"},
+                        {key: 'startDepth', label: "From Depth"},
+                        {key: 'endDepth', label: "To Depth"},
+                        {key: 'gasName', label: "Gas"},
+                        {key: 'time',  label: "Time"},
                         {
                             key: "remove",
                             allowHtml: true,
@@ -607,6 +633,20 @@
 
                     diveSegmentsTable.delegate("click", removeRow,
                             ".yui3-datatable-data .yui3-datatable-col-remove button", diveSegmentsTable);
+
+                    var decoPlanColumns = [
+                        {key: 'startDepth', label: "Starting Depth"},
+                        {key: 'endDepth', label: "Ending Depth"},
+                        {key: 'gasName', label: "Gas Used"},
+                        {key: 'time',  label: "Time (Minutes)"},
+                    ];
+                    decoPlanTable = new Y.DataTable.Base(
+                            {
+                                columnset: decoPlanColumns,
+                                recordset: [],
+                                caption: "Computed Dive Plan"
+                            }
+                    ).render('#decoPlanTable');
 
                 }
         );
