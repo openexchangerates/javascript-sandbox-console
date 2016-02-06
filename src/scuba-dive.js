@@ -1357,7 +1357,6 @@ $self.vpm = function () {
         498,
         635
       ];
-      //console.log(self.Helium_Pressure);
     };
     DiveState.prototype.get_json = function get_json() {
       var self = this;
@@ -1524,8 +1523,6 @@ $self.vpm = function () {
         starting_gas_tension = self.Initial_Helium_Pressure[i] + self.Initial_Nitrogen_Pressure[i] + self.Constant_Pressure_Other_Gases;
         starting_gradient = starting_ambient_pressure - starting_gas_tension;
         ending_gas_tension = self.Helium_Pressure[i] + self.Nitrogen_Pressure[i] + self.Constant_Pressure_Other_Gases;
-        //console.log(self.Helium_Pressure);
-        //console.log('self.Helium_Pressure[i]: ' + self.Helium_Pressure[i] + ' self.Nitrogen_Pressure[i]: ' + self.Nitrogen_Pressure[i] + ' i:' + i + ' starting_ambient_pressure:' + starting_ambient_pressure);
         ending_gradient = ending_ambient_pressure - ending_gas_tension;
         radius_onset_of_imperm_he = 1 / (gradient_onset_of_imperm_pa / (2 * (self.settings_values.Skin_Compression_GammaC - self.settings_values.Surface_Tension_Gamma)) + 1 / self.Adjusted_Critical_Radius_He[i]);
         radius_onset_of_imperm_n2 = 1 / (gradient_onset_of_imperm_pa / (2 * (self.settings_values.Skin_Compression_GammaC - self.settings_values.Surface_Tension_Gamma)) + 1 / self.Adjusted_Critical_Radius_N2[i]);
@@ -1568,7 +1565,7 @@ $self.vpm = function () {
       ending_gas_tension = high_bound_helium_pressure + high_bound_nitrogen_pressure + self.Constant_Pressure_Other_Gases;
       function_at_high_bound = ending_ambient_pressure - ending_gas_tension - gradient_onset_of_imperm;
       if (function_at_high_bound * function_at_low_bound >= 0) {
-        throw new RootException('ERROR! ROOT IS NOT WITHIN BRACKETS');
+        throw new RootException('ERROR! ROOT IS NOT WITHIN BRACKETS. Source:onset_of_impermeability. Values - highbound: ' + function_at_high_bound + " lowbound: " + function_at_low_bound);
       }
       if (function_at_low_bound < 0) {
         time = low_bound;
@@ -1666,7 +1663,9 @@ $self.vpm = function () {
         high_bound_nitrogen_pressure = schreiner_equation(initial_inspired_n2_pressure, nitrogen_rate, high_bound, self.Nitrogen_Time_Constant[i], initial_nitrogen_pressure);
         function_at_high_bound = high_bound_helium_pressure + high_bound_nitrogen_pressure + self.Constant_Pressure_Other_Gases;
         if (function_at_high_bound * function_at_low_bound >= 0) {
-          throw new RootException('ERROR! ROOT IS NOT WITHIN BRACKETS');
+          //throw new RootException('ERROR! ROOT IS NOT WITHIN BRACKETS. Source:calc_start_of_deco_zone. Values - highbound: ' + function_at_high_bound + " lowbound: " + function_at_low_bound);
+          this.Depth_Start_of_Deco_Zone = starting_depth; //Bound start of deco zone to starting depth
+          console.log("WARNING: This dive moves you too shallow past what the leading compartment (number " + i +") allows for.");
         }
         if (function_at_low_bound < 0) {
           time_to_start_of_deco_zone = low_bound;
@@ -2000,6 +1999,7 @@ $self.vpm = function () {
           self.Adjusted_Critical_Radius_He[i] = self.Initial_Critical_Radius_He[i];
           self.Helium_Pressure[i] = 0;
           self.Nitrogen_Pressure[i] = (self.Barometric_Pressure - self.Water_Vapor_Pressure) * self.fraction_inert_gas;
+
         }
       } else {
         self.vpm_altitude_dive_algorithm(self.altitude_values);
@@ -2035,7 +2035,6 @@ $self.vpm = function () {
       for (var ՐՏ_Index1 = 0; ՐՏ_Index1 < ՐՏ_Iter1.length; ՐՏ_Index1++) {
         profile = ՐՏ_Iter1[ՐՏ_Index1];
         profile_code = profile.profile_code;
-          //console.log("Profile :" + JSON.stringify(profile));
         if (profile_code === 1) {
           self.Starting_Depth = profile.starting_depth;
           self.Ending_Depth = profile.ending_depth;
@@ -2259,6 +2258,7 @@ $self.vpm = function () {
         }
       }
       self.gas_loadings_ascent_descent(self.Starting_Depth, self.Depth_Start_of_Deco_Zone, self.Rate);
+
       self.Run_Time_Start_of_Deco_Zone = self.Run_Time;
       self.Deco_Phase_Volume_Time = 0;
       self.Last_Run_Time = 0;
@@ -2396,10 +2396,7 @@ $self.vpm = function () {
 
     function schreiner_equation(initial_inspired_gas_pressure, rate_change_insp_gas_pressure, interval_time, gas_time_constant, initial_gas_pressure) {
       'Function for ascent and descent gas loading calculations';
-        //console.log("initial_inspired_gas_pressure: " + initial_inspired_gas_pressure + " rate_change_insp_gas_pressure: " + rate_change_insp_gas_pressure + " interval_time: " + interval_time + " gas_time_constant: " + gas_time_constant + " initial_gas_pressure: " + initial_gas_pressure);
-      var tmp = initial_inspired_gas_pressure + rate_change_insp_gas_pressure * (interval_time - 1 / gas_time_constant) - (initial_inspired_gas_pressure - initial_gas_pressure - rate_change_insp_gas_pressure / gas_time_constant) * Math.exp(-gas_time_constant * interval_time);
-        //console.log("Schreiner Output: " + tmp);
-        return tmp;
+      return initial_inspired_gas_pressure + rate_change_insp_gas_pressure * (interval_time - 1 / gas_time_constant) - (initial_inspired_gas_pressure - initial_gas_pressure - rate_change_insp_gas_pressure / gas_time_constant) * Math.exp(-gas_time_constant * interval_time);
     }
     function haldane_equation(initial_gas_pressure, inspired_gas_pressure, gas_time_constant, interval_time) {
       'Function for gas loading calculations at a constant depth';
@@ -2411,10 +2408,10 @@ $self.vpm = function () {
       function_at_low_bound = low_bound * low_bound * (A * low_bound - B) - C;
       function_at_high_bound = high_bound * high_bound * (A * high_bound - B) - C;
       if (function_at_low_bound > 0 && function_at_high_bound > 0) {
-        throw new RootException('ERROR! ROOT IS NOT WITHIN BRACKETS');
+        throw new RootException('ERROR! ROOT IS NOT WITHIN BRACKETS. Source:radius_root_finder. Values - highbound: ' + function_at_high_bound + " lowbound: " + function_at_low_bound);
       }
       if (function_at_low_bound < 0 && function_at_high_bound < 0) {
-        throw new RootException('ERROR! ROOT IS NOT WITHIN BRACKETS');
+        throw new RootException('ERROR! ROOT IS NOT WITHIN BRACKETS. Source:radius_root_finder. Values - highbound: ' + function_at_high_bound + " lowbound: " + function_at_low_bound);
       }
       if (function_at_low_bound === 0) {
         return low_bound;
@@ -2521,7 +2518,6 @@ $self.vpm = function () {
     maxppO2 = maxppO2 || 1.6;
     maxEND = maxEND || 30;
     var currentGasName;
-    //console.log(this.segments);
     if (typeof fromDepth == 'undefined') {
       if (this.segments.length == 0) {
         throw 'No depth to decompress from has been specified, and neither have any dive stages been registered. Unable to decompress.';
@@ -2601,11 +2597,13 @@ $self.vpm = function () {
         });
       }
     }
+
     var ascent_summary = [];
     //add the initial jump
     ascent_summary.push({
       'starting_depth': fromDepth,
       'gasmix': getGasMixNumerForLabel(segment.gasName),
+      'mod': 2000, //push this gas below ANY deco gasses for this segment
       'rate': -10,
       //meters
       'step_size': 3,
@@ -2619,9 +2617,14 @@ $self.vpm = function () {
       var ead = Math.round(decoGas.eadInMeters(maxEND, this.isFreshWater));
       //pick gas switch depth as lesser of the two
       var switchDepth = mod < ead ? mod : ead;
+      //if only switchDepth is less than fromDepth (else the algorithm will push you down)
+      if (switchDepth > fromDepth) {
+        switchDepth = fromDepth;
+      }
       ascent_summary.push({
         'starting_depth': switchDepth,
         'gasmix':getGasMixNumerForLabel(gasName),
+        'mod': mod,
         'rate': -10,
         //meters
         'step_size': 3,
@@ -2637,9 +2640,31 @@ $self.vpm = function () {
         } else if (a.starting_depth < b.starting_depth) {
             return 1;
         } else {
-            return 0;
+            if (a.mod > b.mod) {
+              return -1;
+            } else if (a.mod < b.mod) {
+              return 1;
+            } else {
+              return 0;
+            }
         }
     });
+
+    var duplicatesExist = true;
+    while (duplicatesExist) {
+      duplicatesExist = false;
+      //remove duplicates
+      for (var i = 0; i < ascent_summary.length - 1; i++) {
+        var a1 = ascent_summary[i];
+        var a2 = ascent_summary[i + 1];
+        if (a1.starting_depth == a2.starting_depth) {
+          //if they both have the same starting depth, remove the first one
+          ascent_summary.splice(i, 1);
+          duplicatesExist = true;
+          break;
+        }
+      }
+    }
 
     //create magical profilecode (for deco: 99)
     var deco_profile = {
@@ -2668,10 +2693,10 @@ $self.vpm = function () {
         'SetPoint_Is_Bar': true,
         'Altitude_Dive_Algorithm': 'OFF',
         'Minimum_Deco_Stop_Time': 1,
-        'Critical_Radius_N2_Microns': 0.6,
-        'Critical_Radius_He_Microns': 0.5,
+        'Critical_Radius_N2_Microns': 0.55,
+        'Critical_Radius_He_Microns': 0.45,
         'Critical_Volume_Algorithm': 'ON',
-        'Crit_Volume_Parameter_Lambda': 7500,
+        'Crit_Volume_Parameter_Lambda': 6500,
         'Gradient_Onset_of_Imperm_Atm': 8.2,
         'Surface_Tension_Gamma': 0.0179,
         'Skin_Compression_GammaC': 0.257,
@@ -2680,7 +2705,7 @@ $self.vpm = function () {
       }
     };
 
-      //console.log(JSON.stringify(input));
+      //console.log(JSON.stringify(input, null, 2));
     var vpmPlanInner = VPMDivePlan(input);
     //execute divestate
     try {
@@ -2693,17 +2718,14 @@ $self.vpm = function () {
     //wrangle output to conform to buhlmann-output - which is simply a series of
       //steps including descent and deco profiles all combined together.
       //and gasmix (the number), is instead referred to by the gas's registered name.
-      //console.log(JSON.stringify(outputjson));
       var decoPlan = [];
       for (var index in outputjson.dive_profile) {
           var seg = outputjson.dive_profile[index];
           if (typeof seg.depth != 'undefined') {
               var newseg = dive.segment(seg.depth, seg.depth, getLabelForGasMixNumber(seg.mixNumber), seg.segmentTime)
-              //console.log(newseg);
             decoPlan.push(newseg);
           } else {
               var newseg = dive.segment(seg.startingDepth, seg.endingDepth, getLabelForGasMixNumber(seg.mixNumber), seg.segmentTime)
-              //console.log(newseg);
               decoPlan.push(newseg);
           }
       }
@@ -2713,11 +2735,9 @@ $self.vpm = function () {
           var seg = outputjson.decompression_profile[index];
           if (typeof seg.rate != 'undefined') {
               var newseg = dive.segment(seg.decoStopDepth - (seg.segmentTime * seg.rate), seg.decoStopDepth, getLabelForGasMixNumber(seg.mixNumber), seg.segmentTime)
-              //console.log(newseg);
               decoPlan.push(newseg);
           } else {
               var newseg = dive.segment(seg.decoStopDepth, seg.decoStopDepth, getLabelForGasMixNumber(seg.mixNumber), seg.segmentTime)
-              //console.log(newseg);
               decoPlan.push(newseg);
           }
       }
@@ -2725,7 +2745,6 @@ $self.vpm = function () {
       return decoPlan;
   };
   plan.prototype.bestDecoGasName = function (depth, maxppO2, maxEND) {
-    //console.log("Finding best deco gas for depth " + depth + " with max ppO2 of " + maxppO2 + "  and max END of " + maxEND);
     //best gas is defined as: a ppO2 at depth <= maxppO2,
     // the highest ppO2 among all of these.
     // END <= 30 (equivalent narcotic depth < 30 meters)
@@ -2735,13 +2754,10 @@ $self.vpm = function () {
       var candidateGas = this.decoGasses[gasName];
       var mod = Math.round(candidateGas.modInMeters(maxppO2, this.isFreshWater));
       var end = Math.round(candidateGas.endInMeters(depth, this.isFreshWater));
-      //console.log("Found candidate deco gas " + gasName + ": " + (candidateGas.fO2) + "/" + (candidateGas.fHe) + " with mod " + mod + " and END " + end);
       if (depth <= mod && end <= maxEND) {
-        //console.log("Candidate " + gasName + " fits within MOD and END limits.");
         if (typeof winner == 'undefined' || //either we have no winner yet
           winner.fO2 < candidateGas.fO2) {
           //or previous winner is a lower O2
-          //console.log("Replaced winner: " + candidateGas);
           winner = candidateGas;
           winnerName = gasName;
         }
