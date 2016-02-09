@@ -1,3 +1,19 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Online Web-based Dive Planning](#online-web-based-dive-planning)
+  - [Can I run it NOW?](#can-i-run-it-now)
+  - [What is this tool?](#what-is-this-tool)
+  - [Examples!](#examples)
+    - [Buhlmann decompression profile](#buhlmann-decompression-profile)
+    - [VPM-B decompression profile](#vpm-b-decompression-profile)
+    - [Calculate the NDLs for different depths, on different gasses (No-deco limit)](#calculate-the-ndls-for-different-depths-on-different-gasses-no-deco-limit)
+    - [Calculate NDL remaining (remaining No-Deco time)](#calculate-ndl-remaining-remaining-no-deco-time)
+  - [How it all works - the technical mumbo jumbo.](#how-it-all-works---the-technical-mumbo-jumbo)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 Online Web-based Dive Planning
 ========================================================================
 
