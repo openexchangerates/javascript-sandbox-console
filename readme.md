@@ -1,7 +1,8 @@
+Online Web-based Dive Planning
+========================================================================
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
-
+**Table of Contents**
 - [Online Web-based Dive Planning](#online-web-based-dive-planning)
   - [Can I run it NOW?](#can-i-run-it-now)
   - [What is this tool?](#what-is-this-tool)
@@ -13,9 +14,6 @@
   - [How it all works - the technical mumbo jumbo.](#how-it-all-works---the-technical-mumbo-jumbo)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-Online Web-based Dive Planning
-========================================================================
 
 ## Can I run it NOW?
 You should find this hosted on: http://deco-planner.archisgore.com/
