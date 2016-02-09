@@ -1,4 +1,4 @@
-Online Web-based Dive Planning tool with multiple decompression models
+Online Web-based Dive Planning
 ========================================================================
 
 ## Can I run it NOW?
