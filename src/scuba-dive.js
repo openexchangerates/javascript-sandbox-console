@@ -694,7 +694,7 @@
             // Calculate nitrogen loading
             var gasRate = dive.gasRateInBarsPerMinute(startDepth, endDepth, time, fN2, this.isFreshWater);
             var halfTime = this.N2HalfTime(); // half-time constant = log2/half-time in minutes
-            var pGas = dive.gasPressureBreathingInBars(endDepth, fN2, this.isFreshWater); // initial ambient pressure
+            var pGas = dive.gasPressureBreathingInBars(startDepth, fN2, this.isFreshWater); // initial ambient pressure
             var pBegin = this.pNitrogen; // initial compartment inert gas pressure in bar
             this.pNitrogen = dive.schreinerEquation(pBegin, pGas, time, halfTime, gasRate);
             //console.log("pBegin=" + pBegin + ", pGas=" + pGas + ", time=" + time +", halfTime=" + halfTime + ", gasRate=" + gasRate + ", result=" + this.pNitrogen);
@@ -702,7 +702,7 @@
             // Calculate helium loading
             gasRate = dive.gasRateInBarsPerMinute(startDepth, endDepth, time, fHe, this.isFreshWater);
             halfTime = this.HeHalfTime();
-            pGas = dive.gasPressureBreathingInBars(endDepth, fHe, this.isFreshWater);
+            pGas = dive.gasPressureBreathingInBars(startDepth, fHe, this.isFreshWater);
             pBegin = this.pHelium;
             this.pHelium = dive.schreinerEquation(pBegin, pGas, time, halfTime, gasRate);
 
