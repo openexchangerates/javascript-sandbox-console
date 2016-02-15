@@ -453,7 +453,7 @@ require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof requ
         /// <param name="isFreshWater" type="Boolean">True to calculate changes in depth while in fresh water, false for salt water.</param>
         /// <returns>The gas loading rate in bars times the fraction of inert gas.</param>
         
-        return Math.abs($self.depthChangeInBarsPerMinute(beginDepth, endDepth, time, isFreshWater)) * fGas;
+        return $self.depthChangeInBarsPerMinute(beginDepth, endDepth, time, isFreshWater) * fGas;
     };
 
     $self.gasPressureBreathingInBars = function (depth, fGas, isFreshWater) {
