@@ -935,7 +935,7 @@
             var change = 1;
             while (ceiling < 0 && change > 0) {
                 //console.log("Ceiling:" +ceiling);
-                change = this.addFlat(depth, gasName, gf);
+                change = this.addFlat(depth, gasName, 1);
                 ceiling = this.getCeiling(gf);
                 time++;
             }

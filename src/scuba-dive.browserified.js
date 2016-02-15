@@ -936,7 +936,7 @@ require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof requ
             var change = 1;
             while (ceiling < 0 && change > 0) {
                 //console.log("Ceiling:" +ceiling);
-                change = this.addFlat(depth, gasName, gf);
+                change = this.addFlat(depth, gasName, 1);
                 ceiling = this.getCeiling(gf);
                 time++;
             }
