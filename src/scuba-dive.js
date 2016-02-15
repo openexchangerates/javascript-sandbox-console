@@ -933,7 +933,7 @@
             var origTissues = JSON.stringify(this.tissues);
             var time = 0;
             var change = 1;
-            while (ceiling < 0 && change > 0) {
+            while (ceiling <= 0 && change > 0) {
                 //console.log("Ceiling:" +ceiling);
                 change = this.addFlat(depth, gasName, 1);
                 ceiling = this.getCeiling(gf);
@@ -944,7 +944,7 @@
                 console.log("NDL is practially infinity. Returning largest number we know of.");
                 return Math.POSITIVE_INFINITY;
             }
-            return time; //We went one minute past a ceiling of "0"
+            return time - 1; //We went one minute past a ceiling of "0"
         };
 
         algorithm.buhlmannTissue = buhlmannTissue;
