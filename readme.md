@@ -89,6 +89,7 @@ newPlan.addDepthChange(0, 30, "air", 3); //went to 100 feet from surface in 3 mi
 newPlan.addFlat(30, "air", 10); //Stayed at 100 feet for 10 minutes
 newPlan.addDepthChange(30, 15, "air", 3); //Went from 100 feet to 50 feet in 3 minutes
 newPlan.ndl(15, "air"); //How long do I have left so I can surface without a mandatory deco obligation?
+</pre>
 
 You can configure things like gradient factor, ppO2 exposure, and maximum END.
 
