@@ -101,6 +101,7 @@
 
                 <div id="tab-help" class="tab-pane">
                     <article class="markdown-body entry-content" itemprop="text"><h1><a id="user-content-online-web-based-dive-planning" class="anchor" href="#online-web-based-dive-planning" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" role="img" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1h-1c-1.5 0-3-1.69-3-3.5s1.55-3.5 3-3.5h4c1.45 0 3 1.69 3 3.5 0 1.41-0.91 2.72-2 3.25v-1.16c0.58-0.45 1-1.27 1-2.09 0-1.28-1.02-2.5-2-2.5H4c-0.98 0-2 1.22-2 2.5s1 2.5 2 2.5z m9-3h-1v1h1c1 0 2 1.22 2 2.5s-1.02 2.5-2 2.5H9c-0.98 0-2-1.22-2-2.5 0-0.83 0.42-1.64 1-2.09v-1.16c-1.09 0.53-2 1.84-2 3.25 0 1.81 1.55 3.5 3 3.5h4c1.45 0 3-1.69 3-3.5s-1.5-3.5-3-3.5z"></path></svg></a>Online Web-based Dive Planning</h1>
+                        
 
                         <h2><a id="user-content-can-i-run-it-now" class="anchor" href="#can-i-run-it-now" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" role="img" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1h-1c-1.5 0-3-1.69-3-3.5s1.55-3.5 3-3.5h4c1.45 0 3 1.69 3 3.5 0 1.41-0.91 2.72-2 3.25v-1.16c0.58-0.45 1-1.27 1-2.09 0-1.28-1.02-2.5-2-2.5H4c-0.98 0-2 1.22-2 2.5s1 2.5 2 2.5z m9-3h-1v1h1c1 0 2 1.22 2 2.5s-1.02 2.5-2 2.5H9c-0.98 0-2-1.22-2-2.5 0-0.83 0.42-1.64 1-2.09v-1.16c-1.09 0.53-2 1.84-2 3.25 0 1.81 1.55 3.5 3 3.5h4c1.45 0 3-1.69 3-3.5s-1.5-3.5-3-3.5z"></path></svg></a>Can I run it NOW?</h2>
 
@@ -172,37 +173,37 @@ newPlan.ndl(30, "air"); //How long do I have left so I can surface without a man
 
                         <h3><a id="user-content-plan-a-multi-level-recreational-dive" class="anchor" href="#plan-a-multi-level-recreational-dive" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" role="img" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1h-1c-1.5 0-3-1.69-3-3.5s1.55-3.5 3-3.5h4c1.45 0 3 1.69 3 3.5 0 1.41-0.91 2.72-2 3.25v-1.16c0.58-0.45 1-1.27 1-2.09 0-1.28-1.02-2.5-2-2.5H4c-0.98 0-2 1.22-2 2.5s1 2.5 2 2.5z m9-3h-1v1h1c1 0 2 1.22 2 2.5s-1.02 2.5-2 2.5H9c-0.98 0-2-1.22-2-2.5 0-0.83 0.42-1.64 1-2.09v-1.16c-1.09 0.53-2 1.84-2 3.25 0 1.81 1.55 3.5 3 3.5h4c1.45 0 3-1.69 3-3.5s-1.5-3.5-3-3.5z"></path></svg></a>Plan a multi-level recreational dive</h3>
 
-                        <p></p><pre>var buhlmann = dive.deco.buhlmann();
+<pre>var buhlmann = dive.deco.buhlmann();
 var newPlan = new buhlmann.plan(buhlmann.ZH16BTissues);
 newPlan.addBottomGas("air", 0.21, 0.0);
 newPlan.addDepthChange(0, 30, "air", 3); //went to 100 feet from surface in 3 minutes
 newPlan.addFlat(30, "air", 10); //Stayed at 100 feet for 10 minutes
 newPlan.addDepthChange(30, 15, "air", 3); //Went from 100 feet to 50 feet in 3 minutes
-newPlan.ndl(15, "air"); //How long do I have left so I can surface without a mandatory deco obligation?<p></p>
+newPlan.ndl(15, "air"); //How long do I have left so I can surface without a mandatory deco obligation?
+</pre>
 
-<p>You can configure things like gradient factor, ppO2 exposure, and maximum END.</p>
+                        <p>You can configure things like gradient factor, ppO2 exposure, and maximum END.</p>
 
-<h2><a id="user-content-how-it-all-works---the-technical-mumbo-jumbo" class="anchor" href="#how-it-all-works---the-technical-mumbo-jumbo" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" role="img" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1h-1c-1.5 0-3-1.69-3-3.5s1.55-3.5 3-3.5h4c1.45 0 3 1.69 3 3.5 0 1.41-0.91 2.72-2 3.25v-1.16c0.58-0.45 1-1.27 1-2.09 0-1.28-1.02-2.5-2-2.5H4c-0.98 0-2 1.22-2 2.5s1 2.5 2 2.5z m9-3h-1v1h1c1 0 2 1.22 2 2.5s-1.02 2.5-2 2.5H9c-0.98 0-2-1.22-2-2.5 0-0.83 0.42-1.64 1-2.09v-1.16c-1.09 0.53-2 1.84-2 3.25 0 1.81 1.55 3.5 3 3.5h4c1.45 0 3-1.69 3-3.5s-1.5-3.5-3-3.5z"></path></svg></a>How it all works - the technical mumbo jumbo.</h2>
+                        <h2><a id="user-content-how-it-all-works---the-technical-mumbo-jumbo" class="anchor" href="#how-it-all-works---the-technical-mumbo-jumbo" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" role="img" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1h-1c-1.5 0-3-1.69-3-3.5s1.55-3.5 3-3.5h4c1.45 0 3 1.69 3 3.5 0 1.41-0.91 2.72-2 3.25v-1.16c0.58-0.45 1-1.27 1-2.09 0-1.28-1.02-2.5-2-2.5H4c-0.98 0-2 1.22-2 2.5s1 2.5 2 2.5z m9-3h-1v1h1c1 0 2 1.22 2 2.5s-1.02 2.5-2 2.5H9c-0.98 0-2-1.22-2-2.5 0-0.83 0.42-1.64 1-2.09v-1.16c-1.09 0.53-2 1.84-2 3.25 0 1.81 1.55 3.5 3 3.5h4c1.45 0 3-1.69 3-3.5s-1.5-3.5-3-3.5z"></path></svg></a>How it all works - the technical mumbo jumbo.</h2>
 
-<p>The purpose of the tool is to have an online dive planning tool that combines all the open source tools out there, to build a responsive, fast, efficient and install-free planning tool. You can share dive plans with others, and more importantly, you can script dive plans, to generate profiles difficult or cumbersome to generate manually.</p>
+                        <p>The purpose of the tool is to have an online dive planning tool that combines all the open source tools out there, to build a responsive, fast, efficient and install-free planning tool. You can share dive plans with others, and more importantly, you can script dive plans, to generate profiles difficult or cumbersome to generate manually.</p>
 
-<p>This repo combines maby public-domain repos. The main reason behind this forked franken-repo is to provide an integration point for stuff that makes no sense in the individual repos on-it's-own (for instance browserifying a script in an npm repo looks ugly, or javascript-converting a python script, looks ugly and makes no sense there.)</p>
+                        <p>This repo combines maby public-domain repos. The main reason behind this forked franken-repo is to provide an integration point for stuff that makes no sense in the individual repos on-it's-own (for instance browserifying a script in an npm repo looks ugly, or javascript-converting a python script, looks ugly and makes no sense there.)</p>
 
-<p>First we start with a browserified (using the browserify tool) version of this Node.js module:
-    <a href="https://github.com/nyxtom/dive">https://github.com/nyxtom/dive</a></p>
+                        <p>First we start with a browserified (using the browserify tool) version of this Node.js module:
+                            <a href="https://github.com/nyxtom/dive">https://github.com/nyxtom/dive</a></p>
 
-<p>This exposes the entire module in the browser (under a global object called dive, declared thus:)
-    var dive = require("/scuba-dive.js");</p>
+                        <p>This exposes the entire module in the browser (under a global object called dive, declared thus:)
+                            var dive = require("/scuba-dive.js");</p>
 
-<p>Secondly, there's a GUI built using AlloyUI (alloyyu.com), that allows you to construct dive plans graphically.</p>
+                        <p>Secondly, there's a GUI built using AlloyUI (alloyyu.com), that allows you to construct dive plans graphically.</p>
 
-<p>Third, these dive plans are converted into Javascript code, which is displayed in a syntax-highlighting editor, again provided by alloyUI (alloyui.com)</p>
+                        <p>Third, these dive plans are converted into Javascript code, which is displayed in a syntax-highlighting editor, again provided by alloyUI (alloyui.com)</p>
 
-<p>Finally there's a REPL-console to run individual commands, taken from: <a href="https://github.com/openexchangerates/javascript-sandbox-console">https://github.com/openexchangerates/javascript-sandbox-console</a></p>
+                        <p>Finally there's a REPL-console to run individual commands, taken from: <a href="https://github.com/openexchangerates/javascript-sandbox-console">https://github.com/openexchangerates/javascript-sandbox-console</a></p>
 
-<p>All the scripts are executed in your browser's main window object. So if you opened your developer tools and your own javascript console, you should be able to walk the entire object graph and use that if you'd like!</p>
-</pre></article>
-
+                        <p>All the scripts are executed in your browser's main window object. So if you opened your developer tools and your own javascript console, you should be able to walk the entire object graph and use that if you'd like!</p>
+                    </article>
                 </div>
 
             </div>
