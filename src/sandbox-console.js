@@ -68,6 +68,17 @@ var Sandbox = {
 			}
 		},
 
+		log: function(val) {
+			var history = this.get('history');
+			var item = {
+				command : val,
+				resultHidden : true
+			};
+			history.push(item);
+			this.set({ history : history}).change();
+			this.save();
+		},
+
 		// Adds a new item to the history
 		addHistory: function(item) {
 			var history = this.get('history');
@@ -92,6 +103,7 @@ var Sandbox = {
 		iframeSetup : function() {
 			this.sandboxFrame = $('<iframe width="0" height="0"/>').css({visibility : 'hidden'}).appendTo('body')[0];
 			this.sandbox = this.sandboxFrame.contentWindow;
+			this.sandbox.log = this.log;
 
 			// This should help IE run eval inside the iframe.
 			if (!this.sandbox.eval && this.sandbox.execScript) {
@@ -128,9 +140,10 @@ var Sandbox = {
 				return false;
 
 			var item = {
-				command : command
+				command : command,
+				resultHidden : false
 			};
-			
+
 			// Evaluate the command and store the eval result, adding some basic classes for syntax-highlighting
 			try {
 				item.result = this.get('iframe') ? this.iframeEval(command) : eval.call(window, command);
@@ -211,7 +224,8 @@ var Sandbox = {
 						_hidden : command._hidden,
 						_class : command._class,
 						command : this.toEscaped(command.command),
-						result :  this.toEscaped(command.result)
+						result :  this.toEscaped(command.result),
+						resultHidden : command.resultHidden
 					});
 				}, "", this)
 			);
