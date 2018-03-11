@@ -10,7 +10,7 @@
 
 	<!-- The demo styles: -->
 	<link href="demo-resources/demo.css" rel="stylesheet"/>
-	
+
 	<!-- The Sandbox stylesheet: -->
 	<link href="src/sandbox.css" rel="stylesheet"/>
 
@@ -30,11 +30,11 @@
 <body>
 
 	<!-- HTML -->
-	
+
 	<h1>js sandbox console</h1>
 
 	<h2>a mini javascript console to play in</h2>
-	
+
 	<div id="sandbox">sandbox loading...</div>
 
 	<div class="content">
@@ -43,16 +43,16 @@
 		</div>
 
 		<h2>Built with Backbone, jQuery, localStorage and &hearts;</h2>
-		
+
 		<p>The js sandbox console is a javascript playground designed to enhance demos and homepages for javascript libraries, plugins and scripts, giving visitors an easy and chilled-out way to test-drive the functionality.</p>
-		
+
 		<p>Inspired by <a href="http://jsconsole.com" title="jsconsole.com" target="_blank">jsconsole.com</a> and built with <a href="http://documentcloud.github.com/backbone/" title="Backbone.js" target="_blank">Backbone.js</a> and jQuery.</p>
 
 		<p>Maintained by <strong><a href="https://openexchangerates.org" title="Open Exchange Rates free currency data API" target="_blank">Open Exchange Rates</a> (see it in action on the <strong><a href="http://openexchangerates.github.io/money.js" title="money.js currency conversion javascript library">money.js library</a></strong> homepage).</p>
-	
+
 
 		<h3>Features</h3>
-	
+
 		<ul>
 			<li>Up/down command history (like terminal), with localStorage saving/persistence</li>
 			<li>Option to evaluate all commands inside a hidden <code>&lt;iframe&gt;</code> (blocking access to global window scope) with a script loader to inject your libraries of choice</li>
@@ -61,7 +61,7 @@
 			<li>Fits into any container and fully embeddable</li>
 			<li>Easy to set up, intuitive to use</li>
 		</ul>
-	
+
 
 		<h3>Download / Fork</h3>
 
@@ -69,12 +69,12 @@
 
 
 		<h3>Installation</h3>
-		
+
 		<p>Add a <code>&lt;div&gt;</code> element, link up the stylesheet, include the templates and dependencies and add the kickoff script and you're good to go:</p>
-		
+
 		<h4>In your &lt;head&gt;:</h4>
 		<pre class="prettyprint">&lt;link href=&quot;sandbox.css&quot; rel=&quot;stylesheet&quot; /&gt;</pre>
-	
+
 		<h4>Wherever you want the console to appear:</h4>
 		<pre class="prettyprint">&lt;div id=&quot;sandbox&quot;&gt;sandbox loading...&lt;/div&gt;</pre>
 
@@ -108,7 +108,7 @@
 		});
 	});
 &lt;/script&gt;</pre>
-		
+
 
 		<h3>Extra Options</h3>
 
@@ -119,7 +119,7 @@ window.sandbox = new Sandbox.View({
 	// these two are required:
 	model : new Sandbox.Model(), // see below for more
 	el : $('#sandbox'), // or etc.
-	
+
 	// these are optional (defaults are given here):
 	resultPrefix : "  => ",
 	helpText : "type javascript commands into the console, hit enter to evaluate. \n[up/down] to scroll through history, ':clear' to reset it. \n[alt + return/up/down] for returns and multi-line editing.",
@@ -149,9 +149,9 @@ sandbox.model.iframeEval("var globalJoss = 'im global, bro'"); // globalJoss is 
 
 
 		<h3>Roadmap / To-Do</h3>
-		
+
 		<p><a href="https://github.com/openexchangerates/javascript-sandbox-console/issues" title="js sandbox console issues">Contributions welcome</a>!</p>
-		
+
 		<ul>
 			<li>Verify IE support</li>
 			<li>Add maximum history length option</li>
@@ -176,7 +176,7 @@ sandbox.model.iframeEval("var globalJoss = 'im global, bro'"); // globalJoss is 
 
 
 	<!-- Templates -->
-	
+
 	<!-- The sandbox template: -->
 	<script type="text/template" id="tplSandbox">
 		<pre class="output"></pre>
@@ -194,10 +194,10 @@ sandbox.model.iframeEval("var globalJoss = 'im global, bro'"); // globalJoss is 
 	<!-- Scripts -->
 
 	<!-- Underscore, Backbone, backbone-localStorage, jQuery -->
-	<script src="src/libs/underscore.min.js"></script>
-	<script src="src/libs/backbone.min.js"></script>
-	<script src="src/libs/backbone-localStorage.min.js"></script>
 	<script src="src/libs/jquery.min.js"></script>
+	<script src="src/libs/underscore-min.js"></script>
+	<script src="src/libs/backbone-min.js"></script>
+	<script src="src/libs/backbone.localStorage-min.js"></script>
 
 	<!-- Some extras for the demo: -->
 	<script src="demo-resources/js/lettering.js"></script>
@@ -206,16 +206,16 @@ sandbox.model.iframeEval("var globalJoss = 'im global, bro'"); // globalJoss is 
 
 	<!-- The JS Sandbox Console script (requires underscore, backbone and jquery): -->
 	<script src="src/sandbox-console.js"></script>
-	
+
 	<!-- When ready, create the model and view -->
 	<script type="text/javascript">
 		jQuery(document).ready(function($) {
 			// Create the sandbox:
 			window.sandbox = new Sandbox.View({
-				el : $('#sandbox'),
+				el : $('#sandbox')[0],
 				model : new Sandbox.Model()
 			});
-			
+
 			// Lettering.js:
 			$('h1').add('h2').add('h3').lettering();
 
@@ -247,7 +247,7 @@ sandbox.model.iframeEval("var globalJoss = 'im global, bro'"); // globalJoss is 
 			sandbox.custom7 = function() {  sandbox.currentHistory = "somethingUndefined; // hit enter!"; sandbox.update(); sandbox.textarea.focus(); };
 			sandbox.custom8 = function() {  sandbox.model.set({ iframe : true }); sandbox.model.addHistory({ command : " ", result : "Commands are now being evaluated inside a sandboxed iframe." }); sandbox.model.iframeSetup(); };
 			sandbox.custom9 = function() {  sandbox.currentHistory = ":load http://code.jquery.com/jquery-1.6.4.js"; sandbox.update(); sandbox.textarea.focus(); };
-			
+
 			gui.add(sandbox, 'custom1').name('Show <code>:help</code> menu');
 			gui.add(sandbox, 'custom2').name('<code>:clear</code> the command history');
 			gui.add(sandbox, 'custom3').name('View all history');
@@ -269,7 +269,7 @@ sandbox.model.iframeEval("var globalJoss = 'im global, bro'"); // globalJoss is 
 				g.src = 'http://platform.twitter.com/widgets.js';
 				s.parentNode.insertBefore(g, s);
 			})(document, 'script');
-	
+
 			// google plus:
 			window.___gcfg = {lang: 'en-GB'};
 			(function() {
