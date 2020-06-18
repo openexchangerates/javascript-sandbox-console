@@ -2,283 +2,975 @@
 <html lang="en" class="no-js">
 <head>
 	<meta charset="utf-8">
-	<title>javascript sandbox console demo</title>
-	<meta name="description" content="interactive javascript console for demos and homepages" />
-	<meta name="keywords" content="javascript, console, sandbox, playground, demo, interactive, plugin, backbone.js, jquery, underscore.js" />
-	<link rel="shortcut icon" href="http://faviconist.com/icons/c8d9b014e98028d3f2432482a1fbb48b/favicon.ico" />
-	<link rel="canonical" href="http://openexchangerates.github.io/javascript-sandbox-console/" />
+	<title>Scuba Diving Planning Software (Web-based)</title>
+	<meta name="description" content="Purely web-based scuba diving decompression software, that supports Buhlmann GF (with gradient factors), and the Variable Permeability Model (VPM-B) decompression models, multiple gasses, multiple stages/levels, and complex shaping. Fully open source, public domain and free." />
+	<meta name="keywords" content="scuba diving, buhlmann, decompression, gradient factors, GF, VPM, VPM/B, Variable Permeability Model, dive planning, nitrox, trimix, multi-level, multi-gas, mixed-gas, heliox, EANx, Enriched Air Nitrox, EANx, tables, No-decompression limits, NDL, Navy Tables, PADI tables, free, open source, public domain, deep air, technical diving, cave diving, stage decompression, javascript, ECMAScript, Node.js, NPM" />
+	<link rel="canonical" href="https://deco-planner.archisgore.com" />
 
-	<!-- The demo styles: -->
-	<link href="demo-resources/demo.css" rel="stylesheet"/>
-	
-	<!-- The Sandbox stylesheet: -->
-	<link href="src/sandbox.css" rel="stylesheet"/>
+	<link href="https://cdn.alloyui.com/3.0.1/aui-css/css/bootstrap.min.css" rel="stylesheet"></link>
 
-	<!-- Google Analytics -->
-	<script type="text/javascript">
-		var _gaq = _gaq || [];
-		_gaq.push(['_setAccount', 'UA-17884149-3']);
-		_gaq.push(['_trackPageview']);
-		(function() {
-			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-		})();
-	</script>
+    <!-- Stylesheet -->
+    <link href="src/sandbox.css" rel="stylesheet"/>
+    <link href="src/github-markdown.css" rel="stylesheet"/>
+
 </head>
 
 <body>
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-56982159-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
 
 	<!-- HTML -->
-	
-	<h1>js sandbox console</h1>
 
-	<h2>a mini javascript console to play in</h2>
-	
-	<div id="sandbox">sandbox loading...</div>
+	<h1>Scuba Dive Planning Software</h1>
 
-	<div class="content">
-		<div class="clearfix">
-			<p class="left"><a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="josscrowcroft" data-url="http://openexchangerates.github.io/javascript-sandbox-console" data-text="javascript sandbox console: a backbone.js-powered playground for library/plugin demos" data-related="josscrowcroft">Tweet</a> &nbsp; <g:plusone size="medium"></g:plusone></p>
+	<h2>FOR ACADEMIC USE ONLY! THIS WILL BE WRONG!</h2>
+<div class="yui3-skin-sam">
+
+<div class="content">
+
+
+		<div id="topLevelTabs">
+
+			<ul class="nav nav-tabs">
+				<li class="active"><a href="#tab-gui-planner">GUI Planner</a></li>
+				<li><a href="#tab-javascript-editor">Javascript Editor</a></li>
+				<li><a href="#tab-repl-console">REPL Console</a></li>
+                <li><a href="#tab-help">Usage-Guide, Examples, and stuff</a></li>
+			</ul>
+
+			<div class="tab-content">
+				<div id="tab-gui-planner" class="tab-pane">
+                    <hr/>
+                    <div id="buttons" style="display:inline-block; vertical-align: top;">
+                        <button id="addBottomGas"></button>
+                        <button id="addDecoGas"></button>
+                        <button id="addDiveSegment"></button>
+                        </br>
+                        <button id="generateJsPlan"></button>
+                        <button id="calculateDeco"></button>
+                    </div>
+                    <hr/>
+                    <div id="otherSettings">
+                        Gf Low: <input id="gfLow" size="5" value="0.2"/>
+                        Gf High: <input id="gfHigh" size="5" value="0.8"/>
+                        ppO2 for Deco: <input id="ppO2" size="5" value="1.6"/>
+                        max END (in meters) for Deco: <input id="end" size="5" value="30"/>
+                        Algorithm:
+                        <select id="algorithm">
+                            <option value="buhlmann">Buhlmann (ZHL-B)</option>
+                            <option value="vpm">VPM-B</option>
+                        </select>
+                    </div>
+                    <hr/>
+                    <div id="bottomGassesTable" style="display:inline-block; vertical-align: top;" ></div>
+                    <div id="decoGassesTable" style="display:inline-block; vertical-align: top;"></div>
+                    <div id="diveSegmentsTable" style="display:inline-block; vertical-align: top;"></div>
+                    <hr/>
+                    <div id="decoPlan" style="display:none; vertical-align: top;">
+                        <b>Total Time:</b><span id="totalTime"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Deco Time:</b><span id="decoTime"></span><br/>
+                        <div id="decoPlanTable" style="display:inline-block; vertical-align: top;"></div>
+                    </div>
+                    </br>
+				</div>
+				<div id="tab-javascript-editor">
+					<div id="javascriptEditor"></div>
+                    <button id="executeFromEditor"></button>
+
+                    <div id="javascriptEditorOutputScrollNode" style="overflow-y: scroll; height: 300px">
+                        <h4 id="javascriptEditorResults">Results</h4>
+                        <pre id="javascriptEditorResultsText"></pre>
+                        <h4 id="javascriptEditorOutput">Console Output</h4>
+                        <pre id="javascriptEditorConsoleOutputText"></pre>
+                    </div>
+
+				</div>
+
+				<div id="tab-repl-console" class="tab-pane">
+                    <div id="sandbox">sandbox console loading...</div>
+				</div>
+
+
+                <div id="tab-help" class="tab-pane">
+                    <article class="markdown-body entry-content" itemprop="text"><h1><a id="user-content-online-web-based-dive-planning" class="anchor" href="#online-web-based-dive-planning" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" role="img" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1h-1c-1.5 0-3-1.69-3-3.5s1.55-3.5 3-3.5h4c1.45 0 3 1.69 3 3.5 0 1.41-0.91 2.72-2 3.25v-1.16c0.58-0.45 1-1.27 1-2.09 0-1.28-1.02-2.5-2-2.5H4c-0.98 0-2 1.22-2 2.5s1 2.5 2 2.5z m9-3h-1v1h1c1 0 2 1.22 2 2.5s-1.02 2.5-2 2.5H9c-0.98 0-2-1.22-2-2.5 0-0.83 0.42-1.64 1-2.09v-1.16c-1.09 0.53-2 1.84-2 3.25 0 1.81 1.55 3.5 3 3.5h4c1.45 0 3-1.69 3-3.5s-1.5-3.5-3-3.5z"></path></svg></a>Online Web-based Dive Planning</h1>
+
+
+                        <h2><a id="user-content-can-i-run-it-now" class="anchor" href="#can-i-run-it-now" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" role="img" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1h-1c-1.5 0-3-1.69-3-3.5s1.55-3.5 3-3.5h4c1.45 0 3 1.69 3 3.5 0 1.41-0.91 2.72-2 3.25v-1.16c0.58-0.45 1-1.27 1-2.09 0-1.28-1.02-2.5-2-2.5H4c-0.98 0-2 1.22-2 2.5s1 2.5 2 2.5z m9-3h-1v1h1c1 0 2 1.22 2 2.5s-1.02 2.5-2 2.5H9c-0.98 0-2-1.22-2-2.5 0-0.83 0.42-1.64 1-2.09v-1.16c-1.09 0.53-2 1.84-2 3.25 0 1.81 1.55 3.5 3 3.5h4c1.45 0 3-1.69 3-3.5s-1.5-3.5-3-3.5z"></path></svg></a>Can I run it NOW?</h2>
+
+                        <p>You should find this hosted on: <a href="https://deco-planner.archisgore.com/">https://deco-planner.archisgore.com/</a></p>
+
+                        <h2><a id="user-content-what-is-this-tool" class="anchor" href="#what-is-this-tool" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" role="img" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1h-1c-1.5 0-3-1.69-3-3.5s1.55-3.5 3-3.5h4c1.45 0 3 1.69 3 3.5 0 1.41-0.91 2.72-2 3.25v-1.16c0.58-0.45 1-1.27 1-2.09 0-1.28-1.02-2.5-2-2.5H4c-0.98 0-2 1.22-2 2.5s1 2.5 2 2.5z m9-3h-1v1h1c1 0 2 1.22 2 2.5s-1.02 2.5-2 2.5H9c-0.98 0-2-1.22-2-2.5 0-0.83 0.42-1.64 1-2.09v-1.16c-1.09 0.53-2 1.84-2 3.25 0 1.81 1.55 3.5 3 3.5h4c1.45 0 3-1.69 3-3.5s-1.5-3.5-3-3.5z"></path></svg></a>What is this tool?</h2>
+
+                        <p>This is a tool meant for executing the <strong>Buhlmann-GF</strong> (<em>with Gradient Factors</em>) and ZHL tissues (A, B and C) and the <strong>Variable Permeability Model</strong> <em>B</em> (<em>VPM-B</em>) (<em>by Erik Baker</em>) algorithms in your browser. I have compared the numbers to GUE's Deco Planner and they are more or less identical (a couple of minutes difference here and there.)</p>
+
+                        <p>The A, B, and C tissues in Buhlmann are used for different scenarios, I think - I could be wrong. I believe you use A tissues for computing NDLs. You use B tissues for Open Circuit (OC), and C tissues for CCRs (Closed Circuit Rebreathers.)</p>
+
+                        <p>The VPM-B model is code picked up from Erik Baker's repository. I have not extensively tested it for comparison/accuracy. I will spend a lot of time with Deco Planner's VPM comparison as well as V Planner, to see how it compares/fares. The VPM implementation behind-the-scenes has support for just about every configuration imaginable. This tool hides it for brevity and for the "get it out to market" aspect. However, if you dig in, you can build complex and rich plans for CCRs with set-point ppO2s and different sizes for bubble nuclei, and just a whole host of things.</p>
+
+                        <p>This tool requires no installation, and if you cloned the repo and opened the HTML file, it would open fine. Or you can find it hosted <a href="https://deco-planner.archisgore.com/">https://deco-planner.archisgore.com/</a>.</p>
+
+                        <p>The real power of this tool is:</p>
+
+                        <ul>
+                            <li><strong>Share, edit and modify dive plans</strong>: because they are stored as programmatic statements. I can easily copy my program, and share it to my buddy, who can then edit or modify it, and send it back to me. This allows a collaborative back-and-forth dive plan to be generated.</li>
+                            <li><strong>Rapidly generate hundreds of dive plans</strong>: with different profiles, or some small modification to study and compare. For instance you can quickly compare thousands of VPM vs Buhlmann dives by increasing bottom time by a minute at each step, and see when and HOW they begin to diverge.</li>
+                            <li><strong>Interactively study tissue loading</strong>: You can add bottom time by one minute and then get tissue loads. Graph it, charge it, whatever. This allows you to understand how tissues load over time, and generate animations.</li>
+                            <li><strong>Figure out "corrections"</strong>: for exceeding planned time or depth. I use this tool to generate my core plan, and then generate deco times for each 10 feet below planned depth, and each 5 minutes past planned time. It gives me a general "sense" of what and how the game changes. It tells me what my bottom line is (no pun intended.) So if I knew adding five minutes is going to increase deco time exponentially, I know where to add my focus.</li>
+                            <li><strong>Recreational multi-level plans possible</strong>: At any point in the buhlmanPlann, you can call getCeiling() to get what your ascent ceiling is (how high you can go - optionally with a conservativism factor passed into it), or you can ask how long you can stay at a depth while maintaining a ceiling of zero feet (also called a No-Deco Limit, often abbreviated to NDL). There are some examples below that explain how to do that.</li>
+                            <li><strong>Free and online</strong>: You don't pay money for using it, but moreover, you don't have to install something. You can use it RIGHT NOW in your browser.</li>
+                            <li><strong>Open-source</strong>: so you can study and understand WHAT is happening, and WHY it is making the decisions that it is. You are not beholden to a "trust-me" dive, which is arguably the worst type of dive, no matter where you stand on the philosophy and religion of diving.</li>
+                        </ul>
+
+                        <h2><a id="user-content-examples" class="anchor" href="#examples" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" role="img" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1h-1c-1.5 0-3-1.69-3-3.5s1.55-3.5 3-3.5h4c1.45 0 3 1.69 3 3.5 0 1.41-0.91 2.72-2 3.25v-1.16c0.58-0.45 1-1.27 1-2.09 0-1.28-1.02-2.5-2-2.5H4c-0.98 0-2 1.22-2 2.5s1 2.5 2 2.5z m9-3h-1v1h1c1 0 2 1.22 2 2.5s-1.02 2.5-2 2.5H9c-0.98 0-2-1.22-2-2.5 0-0.83 0.42-1.64 1-2.09v-1.16c-1.09 0.53-2 1.84-2 3.25 0 1.81 1.55 3.5 3 3.5h4c1.45 0 3-1.69 3-3.5s-1.5-3.5-3-3.5z"></path></svg></a>Examples!</h2>
+
+                        <h3><a id="user-content-buhlmann-decompression-profile" class="anchor" href="#buhlmann-decompression-profile" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" role="img" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1h-1c-1.5 0-3-1.69-3-3.5s1.55-3.5 3-3.5h4c1.45 0 3 1.69 3 3.5 0 1.41-0.91 2.72-2 3.25v-1.16c0.58-0.45 1-1.27 1-2.09 0-1.28-1.02-2.5-2-2.5H4c-0.98 0-2 1.22-2 2.5s1 2.5 2 2.5z m9-3h-1v1h1c1 0 2 1.22 2 2.5s-1.02 2.5-2 2.5H9c-0.98 0-2-1.22-2-2.5 0-0.83 0.42-1.64 1-2.09v-1.16c-1.09 0.53-2 1.84-2 3.25 0 1.81 1.55 3.5 3 3.5h4c1.45 0 3-1.69 3-3.5s-1.5-3.5-3-3.5z"></path></svg></a>Buhlmann decompression profile</h3>
+
+<pre>var buhlmannDeco = dive.deco.buhlmann();
+var newPlan = new buhlmannDeco.plan(buhlmannDeco.ZH16ATissues); // 1 abs pressure in fresh water
+newPlan.addBottomGas("2135", 0.21, 0.35);
+newPlan.addDecoGas("50%", 0.5, 0.0);
+newPlan.addDepthChange(0, 50, "2135", 5);
+newPlan.addFlat(50, "2135", 25);
+var decoPlan = plan.calculateDecompression(false, 0.2, 0.8, 1.6, 30); //gradientFactorLow = 0.2, gradientFactorHigh=0.8, deco ppO2 = 1.6, and max END allowed: 30 meters.
+</pre>
+
+                        <h3><a id="user-content-vpm-b-decompression-profile" class="anchor" href="#vpm-b-decompression-profile" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" role="img" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1h-1c-1.5 0-3-1.69-3-3.5s1.55-3.5 3-3.5h4c1.45 0 3 1.69 3 3.5 0 1.41-0.91 2.72-2 3.25v-1.16c0.58-0.45 1-1.27 1-2.09 0-1.28-1.02-2.5-2-2.5H4c-0.98 0-2 1.22-2 2.5s1 2.5 2 2.5z m9-3h-1v1h1c1 0 2 1.22 2 2.5s-1.02 2.5-2 2.5H9c-0.98 0-2-1.22-2-2.5 0-0.83 0.42-1.64 1-2.09v-1.16c-1.09 0.53-2 1.84-2 3.25 0 1.81 1.55 3.5 3 3.5h4c1.45 0 3-1.69 3-3.5s-1.5-3.5-3-3.5z"></path></svg></a>VPM-B decompression profile</h3>
+
+<pre>var vpmDeco = dive.deco.vpm();
+var newPlan = new vpm.plan(); // 1 abs pressure in fresh water
+newPlan.addBottomGas("2135", 0.21, 0.35);
+newPlan.addDecoGas("50%", 0.5, 0.0);
+newPlan.addDepthChange(0, 50, "2135", 5);
+newPlan.addFlat(50, "2135", 25);
+var decoPlan = plan.calculateDecompression(false, 0.2, 0.8, 1.6, 30); //gradientFactorLow = 0.2, gradientFactorHigh=0.8, deco ppO2 = 1.6, and max END allowed: 30 meters.
+</pre>
+
+                        <h3><a id="user-content-calculate-the-ndls-for-different-depths-on-different-gasses-no-deco-limit" class="anchor" href="#calculate-the-ndls-for-different-depths-on-different-gasses-no-deco-limit" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" role="img" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1h-1c-1.5 0-3-1.69-3-3.5s1.55-3.5 3-3.5h4c1.45 0 3 1.69 3 3.5 0 1.41-0.91 2.72-2 3.25v-1.16c0.58-0.45 1-1.27 1-2.09 0-1.28-1.02-2.5-2-2.5H4c-0.98 0-2 1.22-2 2.5s1 2.5 2 2.5z m9-3h-1v1h1c1 0 2 1.22 2 2.5s-1.02 2.5-2 2.5H9c-0.98 0-2-1.22-2-2.5 0-0.83 0.42-1.64 1-2.09v-1.16c-1.09 0.53-2 1.84-2 3.25 0 1.81 1.55 3.5 3 3.5h4c1.45 0 3-1.69 3-3.5s-1.5-3.5-3-3.5z"></path></svg></a>Calculate the NDLs for different depths, on different gasses (No-deco limit)</h3>
+
+<pre>var buhlmann = dive.deco.buhlmann();
+var newPlan = new buhlmann.plan(buhlmann.ZH16BTissues);
+newPlan.addBottomGas("air", 0.21, 0.0);
+newPlan.ndl(dive.feetToMeters(100), "air");
+</pre>
+
+                        <h3><a id="user-content-calculate-ndl-remaining-remaining-no-deco-time" class="anchor" href="#calculate-ndl-remaining-remaining-no-deco-time" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" role="img" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1h-1c-1.5 0-3-1.69-3-3.5s1.55-3.5 3-3.5h4c1.45 0 3 1.69 3 3.5 0 1.41-0.91 2.72-2 3.25v-1.16c0.58-0.45 1-1.27 1-2.09 0-1.28-1.02-2.5-2-2.5H4c-0.98 0-2 1.22-2 2.5s1 2.5 2 2.5z m9-3h-1v1h1c1 0 2 1.22 2 2.5s-1.02 2.5-2 2.5H9c-0.98 0-2-1.22-2-2.5 0-0.83 0.42-1.64 1-2.09v-1.16c-1.09 0.53-2 1.84-2 3.25 0 1.81 1.55 3.5 3 3.5h4c1.45 0 3-1.69 3-3.5s-1.5-3.5-3-3.5z"></path></svg></a>Calculate NDL remaining (remaining No-Deco time)</h3>
+
+<pre>var buhlmann = dive.deco.buhlmann();
+var newPlan = new buhlmann.plan(buhlmann.ZH16BTissues);
+newPlan.addBottomGas("air", 0.21, 0.0);
+newPlan.addDepthChange(0, 30, "air", 3); //went to 100 feet from surface in 3 minutes
+newPlan.addFlat(30, "air", 10); //Stayed at 100 feet for 10 minutes
+newPlan.ndl(30, "air"); //How long do I have left so I can surface without a mandatory deco obligation?
+</pre>
+
+                        <h3><a id="user-content-plan-a-multi-level-recreational-dive" class="anchor" href="#plan-a-multi-level-recreational-dive" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" role="img" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1h-1c-1.5 0-3-1.69-3-3.5s1.55-3.5 3-3.5h4c1.45 0 3 1.69 3 3.5 0 1.41-0.91 2.72-2 3.25v-1.16c0.58-0.45 1-1.27 1-2.09 0-1.28-1.02-2.5-2-2.5H4c-0.98 0-2 1.22-2 2.5s1 2.5 2 2.5z m9-3h-1v1h1c1 0 2 1.22 2 2.5s-1.02 2.5-2 2.5H9c-0.98 0-2-1.22-2-2.5 0-0.83 0.42-1.64 1-2.09v-1.16c-1.09 0.53-2 1.84-2 3.25 0 1.81 1.55 3.5 3 3.5h4c1.45 0 3-1.69 3-3.5s-1.5-3.5-3-3.5z"></path></svg></a>Plan a multi-level recreational dive</h3>
+
+<pre>var buhlmann = dive.deco.buhlmann();
+var newPlan = new buhlmann.plan(buhlmann.ZH16BTissues);
+newPlan.addBottomGas("air", 0.21, 0.0);
+newPlan.addDepthChange(0, 30, "air", 3); //went to 100 feet from surface in 3 minutes
+newPlan.addFlat(30, "air", 10); //Stayed at 100 feet for 10 minutes
+newPlan.addDepthChange(30, 15, "air", 3); //Went from 100 feet to 50 feet in 3 minutes
+newPlan.ndl(15, "air"); //How long do I have left so I can surface without a mandatory deco obligation?
+</pre>
+
+                        <p>You can configure things like gradient factor, ppO2 exposure, and maximum END.</p>
+
+                        <h2><a id="user-content-how-it-all-works---the-technical-mumbo-jumbo" class="anchor" href="#how-it-all-works---the-technical-mumbo-jumbo" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" role="img" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1h-1c-1.5 0-3-1.69-3-3.5s1.55-3.5 3-3.5h4c1.45 0 3 1.69 3 3.5 0 1.41-0.91 2.72-2 3.25v-1.16c0.58-0.45 1-1.27 1-2.09 0-1.28-1.02-2.5-2-2.5H4c-0.98 0-2 1.22-2 2.5s1 2.5 2 2.5z m9-3h-1v1h1c1 0 2 1.22 2 2.5s-1.02 2.5-2 2.5H9c-0.98 0-2-1.22-2-2.5 0-0.83 0.42-1.64 1-2.09v-1.16c-1.09 0.53-2 1.84-2 3.25 0 1.81 1.55 3.5 3 3.5h4c1.45 0 3-1.69 3-3.5s-1.5-3.5-3-3.5z"></path></svg></a>How it all works - the technical mumbo jumbo.</h2>
+
+                        <p>The purpose of the tool is to have an online dive planning tool that combines all the open source tools out there, to build a responsive, fast, efficient and install-free planning tool. You can share dive plans with others, and more importantly, you can script dive plans, to generate profiles difficult or cumbersome to generate manually.</p>
+
+                        <p>This repo combines maby public-domain repos. The main reason behind this forked franken-repo is to provide an integration point for stuff that makes no sense in the individual repos on-it's-own (for instance browserifying a script in an npm repo looks ugly, or javascript-converting a python script, looks ugly and makes no sense there.)</p>
+
+                        <p>First we start with a browserified (using the browserify tool) version of this Node.js module:
+                            <a href="https://github.com/nyxtom/dive">https://github.com/nyxtom/dive</a></p>
+
+                        <p>This exposes the entire module in the browser (under a global object called dive, declared thus:)
+                            var dive = require("/scuba-dive.js");</p>
+
+                        <p>Secondly, there's a GUI built using AlloyUI (alloyyu.com), that allows you to construct dive plans graphically.</p>
+
+                        <p>Third, these dive plans are converted into Javascript code, which is displayed in a syntax-highlighting editor, again provided by alloyUI (alloyui.com)</p>
+
+                        <p>Finally there's a REPL-console to run individual commands, taken from: <a href="https://github.com/openexchangerates/javascript-sandbox-console">https://github.com/openexchangerates/javascript-sandbox-console</a></p>
+
+                        <p>All the scripts are executed in your browser's main window object. So if you opened your developer tools and your own javascript console, you should be able to walk the entire object graph and use that if you'd like!</p>
+                    </article>
+                </div>
+
+            </div>
+
 		</div>
 
-		<h2>Built with Backbone, jQuery, localStorage and &hearts;</h2>
-		
-		<p>The js sandbox console is a javascript playground designed to enhance demos and homepages for javascript libraries, plugins and scripts, giving visitors an easy and chilled-out way to test-drive the functionality.</p>
-		
-		<p>Inspired by <a href="http://jsconsole.com" title="jsconsole.com" target="_blank">jsconsole.com</a> and built with <a href="http://documentcloud.github.com/backbone/" title="Backbone.js" target="_blank">Backbone.js</a> and jQuery.</p>
 
-		<p>Maintained by <strong><a href="https://openexchangerates.org" title="Open Exchange Rates free currency data API" target="_blank">Open Exchange Rates</a> (see it in action on the <strong><a href="http://openexchangerates.github.io/money.js" title="money.js currency conversion javascript library">money.js library</a></strong> homepage).</p>
-	
+    <div id="getGasModal"></div>
+    <hr/>
 
-		<h3>Features</h3>
-	
-		<ul>
-			<li>Up/down command history (like terminal), with localStorage saving/persistence</li>
-			<li>Option to evaluate all commands inside a hidden <code>&lt;iframe&gt;</code> (blocking access to global window scope) with a script loader to inject your libraries of choice</li>
-			<li>Basic syntax highlighting for errors and variable types
-			<li>Special commands (like <code>:help</code>, <code>:clear</code> and <code>:load</code>)</li>
-			<li>Fits into any container and fully embeddable</li>
-			<li>Easy to set up, intuitive to use</li>
-		</ul>
-	
-
-		<h3>Download / Fork</h3>
-
-		<p>You can check out the latest code from the <a href="https://github.com/openexchangerates/javascript-sandbox-console" title="js sandbox console">js sandbox console github repository</a>.</p>
-
-
-		<h3>Installation</h3>
-		
-		<p>Add a <code>&lt;div&gt;</code> element, link up the stylesheet, include the templates and dependencies and add the kickoff script and you're good to go:</p>
-		
-		<h4>In your &lt;head&gt;:</h4>
-		<pre class="prettyprint">&lt;link href=&quot;sandbox.css&quot; rel=&quot;stylesheet&quot; /&gt;</pre>
-	
-		<h4>Wherever you want the console to appear:</h4>
-		<pre class="prettyprint">&lt;div id=&quot;sandbox&quot;&gt;sandbox loading...&lt;/div&gt;</pre>
-
-		<h4>Anywhere between the &lt;div&gt; and the &lt;script&gt;s:</h4>
-		<pre class="prettyprint">&lt;!-- The sandbox template --&gt;
-&lt;script type=&quot;text/template&quot; id=&quot;tplSandbox&quot;&gt;
-	&lt;pre class=&quot;output&quot;&gt;&lt;/pre&gt;
-	&lt;div class=&quot;input&quot;&gt;
-		&lt;textarea rows=&quot;1&quot; placeholder=&quot;&lt;%= placeholder %&gt;&quot;&gt;&lt;/textarea&gt;
-	&lt;/div&gt;
-&lt;/script&gt;
-
-&lt;!-- The command/result template (NB whitespace/line breaks matter inside &lt;pre&gt; tag): --&gt;
-&lt;script type=&quot;text/template&quot; id=&quot;tplCommand&quot;&gt;&lt;% if (! _hidden) { %&gt;&lt;span class=&quot;command&quot;&gt;&lt;%= command %&gt;&lt;/span&gt;
-&lt;span class=&quot;prefix&quot;&gt;&lt;%= this.resultPrefix %&gt;&lt;/span&gt;&lt;span class=&quot;&lt;%= _class %&gt;&quot;&gt;&lt;%= result %&gt;&lt;/span&gt;
-&lt;% } %&gt;&lt;/script&gt;</pre>
-
-		<h4>Near the closing &lt;/body&gt; tag, after the templates:</h4>
-		<pre class="prettyprint">&lt;script src=&quot;js/libs/underscore.min.js&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;js/libs/backbone.min.js&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;js/libs/backbone-localstorage.min.js&quot;&gt;&lt;/script&gt;&lt;!-- opt --&gt;
-&lt;script src=&quot;js/libs/jquery.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;js/sandbox-console.js&quot;&gt;&lt;/script&gt;
-&lt;script type=&quot;text/javascript&quot;&gt;
-	jQuery(document).ready(function($) {
-		// Create the sandbox:
-		window.sandbox = new Sandbox.View({
-			el : $('#sandbox'),
-			model : new Sandbox.Model()
-		});
-	});
-&lt;/script&gt;</pre>
-		
-
-		<h3>Extra Options</h3>
-
-		<p>You can pass extra options in to the Sandbox Backbone Model and View to control elements of the console. They are self-explanatory - for example:</p>
-
-		<pre class="prettyprint">// Create the sandbox:
-window.sandbox = new Sandbox.View({
-	// these two are required:
-	model : new Sandbox.Model(), // see below for more
-	el : $('#sandbox'), // or etc.
-	
-	// these are optional (defaults are given here):
-	resultPrefix : "  => ",
-	helpText : "type javascript commands into the console, hit enter to evaluate. \n[up/down] to scroll through history, ':clear' to reset it. \n[alt + return/up/down] for returns and multi-line editing.",
-	tabCharacter : "\t",
-	placeholder : "// type some javascript and hit enter (:help for info)"
-});</pre>
-
-
-		<h3>Sandboxed iFrame Mode</h3>
-
-		<p>By default, the sandbox evaluates commands in the global (top-level/window) scope. To prevent users from playing with the active document (or to create a totally clean execution context to play in) you can switch on the <code>iframe</code> mode on the <code>Sandbox.Model</code>. This creates an invisible <code>&lt;iframe&gt;</code> element and evaluates all commands inside its context.</p>
-		<p>This means that visitors won't have access to globals from the page you're running (including any libraries or scripts you've included). Use <code>sandbox.model.load()</code> to inject js files into the <code>&lt;iframe&gt;</code> window, making them available in the sandbox.</p>
-		<p><strong>This is the recommended way to integrate the sandbox.</strong></p>
-
-		<pre class="prettyprint">// Create the sandbox, with `iframe` mode on:
-window.sandbox = new Sandbox.View({
-	model : new Sandbox.Model({ iframe : true }),
-	el : $('#sandbox')
-});
-
-// Pre-load your libraries for the iframe:
-sandbox.model.load('http://code.jquery.com/jquery-1.6.4.js');
-sandbox.model.load('my/cool/library.js');
-
-// You can also evaluate code inside the iframe after it loads:
-sandbox.model.iframeEval("var globalJoss = 'im global, bro'"); // globalJoss is now available in the iframe</pre>
-
-
-		<h3>Roadmap / To-Do</h3>
-		
-		<p><a href="https://github.com/openexchangerates/javascript-sandbox-console/issues" title="js sandbox console issues">Contributions welcome</a>!</p>
-		
-		<ul>
-			<li>Verify IE support</li>
-			<li>Add maximum history length option</li>
-			<li>Create extra CSS styles/skins and add to demo</li>
-			<li>Write CSS for disabled X/Y scrolling and wrapped output</li>
-			<li>Improve up/down action in multi-line input</li>
-		</ul>
-
-
-		<h3>Links</h3>
-
-		<p>the javascript sandbox console is open source and maintained by <strong><a href="https://openexchangerates.org" title="Open Exchange Rates free currency data API" target="_blank">Open Exchange Rates</a></strong> - the lightweight currency data API for developers, startups and Fortune 500s.</p>
-		<p>Feedback, support or questions? <strong><a href="mailto:info@openexchangerates.org" title="Contact Open Exchange Rates">Contact Open Exchange Rates</a></strong> for guidance.</p>
-		<p>Bugs, issues, suggestions or contributions? Please <strong><a href="https://github.com/openexchangerates/javascript-sandbox-console/issues" title="js sandbox console Github repository issues">post them here</a></strong>.</p>
-
-		<p><a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="josscrowcroft" data-url="http://openexchangerates.github.io/javascript-sandbox-console" data-text="javascript sandbox console: a backbone.js-powered playground for library/plugin demos" data-related="josscrowcroft">Tweet</a> &nbsp; <g:plusone size="medium"></g:plusone></p>
-
+		<p>Maintained by <strong><a href="https://archisgore.com" title="Archis Gore" target="_blank">Archis Gore</a> </strong></p>
+		<p>You can haz source code! <a href="https://github.com/archisgore/online-deco-console" title="Source Code">https://github.com/archisgore/online-deco-console</a>.</p>
 	</div>
 
+</div>
+
+<!-- Scripts -->
+
+
+<script src="https://cdn.alloyui.com/3.0.1/aui/aui-min.js"></script>
+<script src="src/scuba-dive.browserified.js"></script>
+
+<script type="text/javascript">
+
+        var dive = require("/scuba-dive.js");
+
+        var consoleShim = {
+            log: function (m) {
+                this.capturedText = this.capturedText + '\n' + m;
+            },
+            capturedText: ""
+        };
+
+
+        function Evaluator(console) {
+            var that = this;
+
+            that.evalHelper = function (str) {
+                that.evalHelper = function (str) {
+                    try {
+                        return JSON.stringify(eval(str), null, 2);
+                    } catch (e) {
+                        return e.toString();
+                    }
+                };
+            };
+        }
+        Evaluator.prototype.evaluate = function (str) {
+            return this.evalHelper(str);
+        };
+
+        var evaluator = new Evaluator(consoleShim);
+
+        evaluator.evaluate("var a=5;"); //give it a nudge
+
+        function deepCompare () {
+            var i, l, leftChain, rightChain;
+
+            function compare2Objects (x, y) {
+                var p;
+
+                // remember that NaN === NaN returns false
+                // and isNaN(undefined) returns true
+                if (isNaN(x) && isNaN(y) && typeof x === 'number' && typeof y === 'number') {
+                    return true;
+                }
+
+                // Compare primitives and functions.
+                // Check if both arguments link to the same object.
+                // Especially useful on step when comparing prototypes
+                if (x === y) {
+                    return true;
+                }
+
+                // Works in case when functions are created in constructor.
+                // Comparing dates is a common scenario. Another built-ins?
+                // We can even handle functions passed across iframes
+                if ((typeof x === 'function' && typeof y === 'function') ||
+                        (x instanceof Date && y instanceof Date) ||
+                        (x instanceof RegExp && y instanceof RegExp) ||
+                        (x instanceof String && y instanceof String) ||
+                        (x instanceof Number && y instanceof Number)) {
+                    return x.toString() === y.toString();
+                }
+
+                // At last checking prototypes as good a we can
+                if (!(x instanceof Object && y instanceof Object)) {
+                    return false;
+                }
+
+                if (x.isPrototypeOf(y) || y.isPrototypeOf(x)) {
+                    return false;
+                }
+
+                if (x.constructor !== y.constructor) {
+                    return false;
+                }
+
+                if (x.prototype !== y.prototype) {
+                    return false;
+                }
+
+                // Check for infinitive linking loops
+                if (leftChain.indexOf(x) > -1 || rightChain.indexOf(y) > -1) {
+                    return false;
+                }
+
+                // Quick checking of one object beeing a subset of another.
+                // todo: cache the structure of arguments[0] for performance
+                for (p in y) {
+                    if (y.hasOwnProperty(p) !== x.hasOwnProperty(p)) {
+                        return false;
+                    }
+                    else if (typeof y[p] !== typeof x[p]) {
+                        return false;
+                    }
+                }
+
+                for (p in x) {
+                    if (y.hasOwnProperty(p) !== x.hasOwnProperty(p)) {
+                        return false;
+                    }
+                    else if (typeof y[p] !== typeof x[p]) {
+                        return false;
+                    }
+
+                    switch (typeof (x[p])) {
+                        case 'object':
+                        case 'function':
+
+                            leftChain.push(x);
+                            rightChain.push(y);
+
+                            if (!compare2Objects (x[p], y[p])) {
+                                return false;
+                            }
+
+                            leftChain.pop();
+                            rightChain.pop();
+                            break;
+
+                        default:
+                            if (x[p] !== y[p]) {
+                                return false;
+                            }
+                            break;
+                    }
+                }
+
+                return true;
+            }
+
+            if (arguments.length < 1) {
+                return true; //Die silently? Don't know how to handle such case, please help...
+                // throw "Need two or more arguments to compare";
+            }
+
+            for (i = 1, l = arguments.length; i < l; i++) {
+
+                leftChain = []; //Todo: this can be cached
+                rightChain = [];
+
+                if (!compare2Objects(arguments[0], arguments[i])) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        function populateEditorWithDivePlan(Y) {
+
+            var algoSelector = Y.one('#algorithm');
+            var algorithm = algoSelector.get('value');
+
+            //generate javascript text for dive plan
+            var jsText = "";
+
+            if (algorithm == "buhlmann") {
+                jsText = jsText  + 'var buhlmann = dive.deco.buhlmann();\n' +
+                    'var plan = new buhlmann.plan(buhlmann.ZH16BTissues);\n';
+            } else if (algorithm == "vpm") {
+                jsText = jsText  + 'var vpm = dive.deco.vpm();\n' +
+                        'var plan = new vpm.plan();\n';
+            } else {
+                throw "Unknown Algorithm!";
+            }
+
+            //add bottom gasses
+            var bottomGasses = bottomGassesTable.get("recordset");
+            for (var gasIndex in bottomGasses) {
+                var bottomGas = bottomGasses[gasIndex];
+                var bottomGassesLine = 'plan.addBottomGas("' + bottomGas.name + '", ' + bottomGas.fO2  + ', ' + bottomGas.fHe + ');\n';
+                jsText = jsText + bottomGassesLine;
+            }
+
+            //add deco gasses
+            var decoGasses = decoGassesTable.get("recordset");
+            for (var gasIndex in decoGasses) {
+                var decoGas = decoGasses[gasIndex];
+                var decoGassesLine = 'plan.addDecoGas("' + decoGas.name + '", ' + decoGas.fO2  + ', ' + decoGas.fHe + ');\n';
+                jsText = jsText + decoGassesLine;
+            }
+
+            //add segments
+            var diveSegments = diveSegmentsTable.get("recordset");
+            for (var segmentIndex in diveSegments) {
+                var diveSegment = diveSegments[segmentIndex];
+                var diveSegmentLine = 'plan.addDepthChange(' +diveSegment.startDepth+ ', ' +diveSegment.endDepth+ ', "' + diveSegment.gasName+ '", ' +diveSegment.time+');\n';
+                jsText = jsText + diveSegmentLine;
+            }
+
+            var gfLow = parseFloat(Y.one("#gfLow").get("value"));
+            if (isNaN(gfLow)) {
+                alert("gfLow has to be a number.");
+                return
+            }
+            var gfHigh = parseFloat(Y.one("#gfHigh").get("value"));
+            if (isNaN(gfHigh)) {
+                alert("gfHigh has to be a number.");
+                return
+            }
+            var maxppO2 = parseFloat(Y.one("#ppO2").get("value"));
+            if (isNaN(maxppO2)) {
+                alert("maxppO2 has to be a number.");
+                return
+            }
+            var maxEnd = parseFloat(Y.one("#end").get("value"));
+            if (isNaN(maxEnd)) {
+                alert("gmaxEndfLow has to be a number.");
+                return
+            }
+
+            //add deco line
+            jsText = jsText + 'plan.calculateDecompression(false, ' + gfLow + ', ' + gfHigh + ', ' + maxppO2 + ', ' + maxEnd+');';
+            jsEditor.set("value", jsText);
+            jsEditor.render();
+        }
+
+        function executeCodeInEditor(Y) {
+            var jsResultsText = Y.one("#javascriptEditorResultsText");
+            var jsConsoleOutputText = Y.one("#javascriptEditorConsoleOutputText");
+            var editorjs = jsEditor.get("value");
+            var result = evaluator.evaluate(editorjs);
+            jsResultsText.set("innerText", result);
+            jsConsoleOutputText.set("innerText", consoleShim.capturedText);
+            consoleShim.capturedText = "";
+        }
+
+        var topLevelTabs;
+		YUI().use(
+				'aui-tabview',
+				function(Y) {
+					topLevelTabs = new Y.TabView(
+							{
+								srcNode: '#topLevelTabs'
+							}
+					).render();
+				}
+		);
+
+        var jsEditor;
+        YUI().use(
+                'aui-ace-editor',
+                function(Y) {
+
+                    var editorValue =
+                    'var buhlmann = dive.deco.buhlmann();\n' +
+                    'var plan = new buhlmann.plan(buhlmann.ZH16BTissues);\n' +
+                    'plan.addBottomGas("2135", 0.21, 0.35);\n' +
+                    'plan.addDecoGas("50%", 0.50, 0);\n' +
+                    'plan.addDecoGas("Oxygen 100%", 1.0, 0.0);\n' +
+                    'plan.addDepthChange(0, dive.feetToMeters(150), "2135", 5);\n' +
+                    'plan.addFlat(dive.feetToMeters(150), "2135", 25);\n' +
+                    '\n' +
+                    'plan.calculateDecompression(false, 0.2, 0.8, 1.6, 30);';
+
+                    jsEditor = new Y.AceEditor(
+                            {
+                                boundingBox: '#javascriptEditor',
+                                height: '200',
+                                value: editorValue,
+                                width: '900',
+                                mode: "javascript",
+                                enableBasicAutocompletion: true
+                            }
+                    ).render();
+
+                }
+        );
+
+        YUI().use(
+                'aui-button',
+                function(Y) {
+                    new Y.Button(
+                            {
+                                icon: 'icon-print',
+                                iconAlign: 'left',
+                                label: 'Execute Code',
+                                srcNode: '#executeFromEditor'
+                            }
+                    ).render();
+
+                    new Y.Button(
+                            {
+                                icon: 'icon-print',
+                                iconAlign: 'left',
+                                label: 'Add a Bottom Mix',
+                                srcNode: '#addBottomGas'
+                            }
+                    ).render();
+                    new Y.Button(
+                            {
+                                icon: 'icon-print',
+                                iconAlign: 'left',
+                                label: 'Add a Deco Mix',
+                                srcNode: '#addDecoGas'
+                            }
+                    ).render();
+                    new Y.Button(
+                            {
+                                icon: 'icon-print',
+                                iconAlign: 'left',
+                                label: 'Add Dive Segment',
+                                srcNode: '#addDiveSegment'
+                            }
+                    ).render();
+
+
+                    new Y.Button(
+                            {
+                                label: 'Generate Javascript Code',
+                                srcNode: '#generateJsPlan'
+                            }
+                    ).render();
+
+                    new Y.Button(
+                            {
+                                label: 'Calculate Decompression',
+                                srcNode: '#calculateDeco'
+                            }
+                    ).render();
+
+                    Y.one('#addBottomGas').on(
+                            'click',
+                            function() {
+                                var val = addGasSelectionToTable(bottomGassesTable);
+                            }
+                    );
+                    Y.one('#addDecoGas').on(
+                            'click',
+                            function() {
+                                var val = addGasSelectionToTable(decoGassesTable);
+                            }
+                    );
+
+                    Y.one('#addDiveSegment').on(
+                            'click',
+                            function() {
+                                addDiveSegment();
+                            }
+                    );
+
+                    Y.one('#generateJsPlan').on(
+                        'click',
+                            function() {
+                                populateEditorWithDivePlan(Y);
+                                topLevelTabs.selectChild(1);
+                            }
+                    );
+
+                    Y.one('#calculateDeco').on(
+                            'click',
+                            function() {
+                                populateEditorWithDivePlan(Y);
+                                executeCodeInEditor(Y);
+                                var resultsText = Y.one("#javascriptEditorResultsText").get("innerText");
+                                //alert(resultsText);
+                                var results = JSON.parse(resultsText);
+                                //alert(results);
+
+                                var calculateTimeOverSegments = function(segArray) {
+                                    var total = 0;
+                                    for (var i = 0; i < segArray.length; i++) {
+                                        var seg = segArray[i];
+                                        total = total + seg.time;
+                                    }
+                                    return total;
+                                }
+
+                                //now repopulate segments back in the segment table
+                                //add segments
+                                var totalSegments = []
+                                for (var resultIndex in results) {
+                                    var finalSegment = results[resultIndex];
+                                    totalSegments.push(finalSegment);
+                                }
+                                var diveSegments = diveSegmentsTable.get('recordset');
+                                var diveTime = calculateTimeOverSegments(diveSegments);
+                                var totalTime = calculateTimeOverSegments(totalSegments);
+                                var decoTime = totalTime - diveTime;
+
+                                Y.one("#decoPlan").set("style", "display:block");
+                                Y.one('#totalTime').set("innerText", (totalTime + ""));
+                                Y.one('#decoTime').set("innerText", (decoTime + ""));
+
+                                decoPlanTable.set("recordset", totalSegments);
+                                decoPlanTable.render();
+                            }
+                    );
+
+                    Y.one("#executeFromEditor").on(
+                            'click',
+                            function(event) {
+                                executeCodeInEditor(Y);
+                            }
+                    );
+                }
+        );
+
+        var decoGassesTable;
+        var bottomGassesTable;
+        var diveSegmentsTable;
+        var decoPlanTable;
+
+        YUI().use(
+                'aui-datatable',
+                function(Y) {
+
+
+                    function removeRow(e) {
+                        // Don't pass `{silent:true}` if there are other objects in your app
+                        // that need to be notified of the checkbox change.
+                        var entry = JSON.parse(JSON.stringify(this.getRecord(e.target))); //.set('select', checked, { silent: true });
+                        var recordset = this.get("recordset");
+                        console.log(recordset);
+                        var newrecordset = [];
+                        for (var i in recordset) {
+                            var entrycandidate = recordset[i];
+                            if (!deepCompare(entry, entrycandidate)) {
+                                console.log(entrycandidate);
+                                newrecordset.push(entrycandidate);
+                            }
+                        }
+
+                        this.set("recordset", newrecordset);
+                        this.render();
+                    }
+
+                    var bottomGassesColumns = [
+                        {key: 'name', label: "Label"},
+                        {key: 'fO2', label: "fO2"},
+                        {key: 'fHe', label: "fHe"},
+                        {
+                            key: "remove",
+                            allowHtml: true,
+                            label:      '',
+                            formatter: '<button/>',
+                            emptyCellValue: '<button/>'
+                        }
+                    ];
+
+                    var bottomGassesData = [
+                        {name: "32%", fO2: 0.32, fHe: 0},
+                        {name: "30/30", fO2: 0.30, fHe: 0.30},
+                        {name: "21/35", fO2: 0.21, fHe: 0.35},
+                        {name: "18/45", fO2: 0.18, fHe: 0.45},
+                        {name: "15/55", fO2: 0.15, fHe: 0.55},
+                        {name: "10/70", fO2: 0.10, fHe: 0.70}
+                    ];
+
+
+                    bottomGassesTable = new Y.DataTable.Base(
+                            {
+                                columnset: bottomGassesColumns,
+                                recordset: bottomGassesData,
+                                caption: "Bottom Gasses"
+                            }
+                    ).render('#bottomGassesTable');
+
+
+                    bottomGassesTable.delegate("click", removeRow,
+                            ".yui3-datatable-data .yui3-datatable-col-remove button", bottomGassesTable);
+
+                    var decoGassesColumns = [
+                            {key: 'name', label: "Label"},
+                            {key: 'fO2', label: "fO2"},
+                            {key: 'fHe', label: "fHe"},
+                            {
+                                key: "remove",
+                                allowHtml: true,
+                                label:      '',
+                                formatter: '<button/>',
+                                emptyCellValue: '<button/>'
+                            }
+                        ];
+
+                    var decoGassesData = [
+                        {name: "Oxygen 100%", fO2: 1.0, fHe: 0},
+                        {name: "50%", fO2: 0.50, fHe: 0.00},
+                        {name: "21/35", fO2: 0.21, fHe: 0.35},
+                    ];
+                    decoGassesTable = new Y.DataTable.Base(
+                            {
+                                columnset: decoGassesColumns,
+                                recordset: decoGassesData,
+                                caption: "Decompression Gasses"
+                            }
+                    ).render('#decoGassesTable');
+                    decoGassesTable.delegate("click", removeRow,
+                            ".yui3-datatable-data .yui3-datatable-col-remove button", decoGassesTable);
+
+                    var diveSegmentsColumns = [
+                        {key: 'startDepth', label: "From Depth"},
+                        {key: 'endDepth', label: "To Depth"},
+                        {key: 'gasName', label: "Gas"},
+                        {key: 'time',  label: "Time"},
+                        {
+                            key: "remove",
+                            allowHtml: true,
+                            label:      '',
+                            formatter: '<button/>',
+                            emptyCellValue: '<button/>'
+                        }
+                    ];
+
+                    var diveSegments = [];
+                    diveSegmentsTable = new Y.DataTable.Base(
+                            {
+                                columnset: diveSegmentsColumns,
+                                recordset: diveSegments,
+                                caption: "Dive Segments"
+                            }
+                    ).render('#diveSegmentsTable');
+
+                    diveSegmentsTable.delegate("click", removeRow,
+                            ".yui3-datatable-data .yui3-datatable-col-remove button", diveSegmentsTable);
+
+                    var decoPlanColumns = [
+                        {key: 'startDepth', label: "Starting Depth"},
+                        {key: 'endDepth', label: "Ending Depth"},
+                        {key: 'gasName', label: "Gas Used"},
+                        {key: 'time',  label: "Time (Minutes)"},
+                    ];
+                    decoPlanTable = new Y.DataTable.Base(
+                            {
+                                columnset: decoPlanColumns,
+                                recordset: [],
+                                caption: "Computed Dive Plan"
+                            }
+                    ).render('#decoPlanTable');
+
+                }
+        );
+
+
+        function addGasSelectionToTable(table) {
+
+
+            YUI().use(
+                    'aui-modal',
+                    function (Y) {
+                        var modal = new Y.Modal(
+                                {
+                                    bodyContent: 'Please Enter your Gas Details: <br>Gas Name: <input id="gasName"/></br>Select Oxygen Percentage:<input id="fO2"/></br>Select Helium Percentage:<input id="fHe"/>',
+                                    centered: true,
+                                    destroyOnHide: true,
+                                    headerContent: '<h3>Enter New Gas</h3>',
+                                    modal: true,
+                                    render: '#getGasModal',
+                                    resizable: {
+                                        handles: 'b, r'
+                                    },
+                                    visible: true,
+                                    width: 450
+                                }
+                        ).render();
+
+                        modal.addToolbar(
+                                [
+                                    {
+                                        label: 'Cancel',
+                                        on: {
+                                            click: function () {
+                                                modal.hide();
+                                            }
+                                        }
+                                    },
+                                    {
+                                        label: 'Okay',
+                                        on: {
+                                            click: function () {
+
+                                                var data = table.get("recordset");
+
+                                                //Validate gas
+                                                var gasName = Y.one("#gasName").get("value");
+                                                var fO2 = parseInt(Y.one("#fO2").get("value"));
+                                                var fHe = parseInt(Y.one("#fHe").get("value"));
+                                                if (isNaN(fO2) || fO2 < 0 || fO2 > 1) {
+                                                    alert("Fraction of Oxygen must be between 0 and 1 inclusive.");
+                                                    return;
+                                                }
+                                                if (isNaN(fHe) || fHe < 0 || fHe > 1) {
+                                                    alert("Fraction of Helium must be between 0 and 1 inclusive.");
+                                                    return;
+                                                }
+                                                if (fO2 + fHe > 1) {
+                                                    alert("Fraction of Oxygen and Helium combined, cannot exceed 1, when added together.");
+                                                    return;
+                                                }
+
+                                                //alert(data);
+                                                for (var gasIndex = 0; gasIndex < data.length; gasIndex++) {
+                                                    //alert(JSON.stringify(gas) + " gasIndex:" + gasIndex);
+                                                    var gas = data[gasIndex];
+                                                    if (gas.name == gasName) {
+                                                        alert("A Gas with name " + gasName + " already exists in this table. Unable to add.");
+                                                        return;
+                                                    }
+                                                    if (gas.fHe == fHe && gas.fO2 == fO2) {
+                                                        alert("A gas with this concentration of gasses already exists: " + gas.name);
+                                                        return;
+                                                    }
+                                                }
+
+                                                data.push({name: gasName, fO2: fO2, fHe: fHe});
+
+                                                table.set("recordset", data);
+                                                table.render();
+
+                                                modal.hide();
+                                            }
+                                        }
+                                    }
+                                ]
+                        );
+
+                    }
+            );
+        }
 
 
 
 
-	<!-- Templates -->
-	
-	<!-- The sandbox template: -->
-	<script type="text/template" id="tplSandbox">
-		<pre class="output"></pre>
-		<div class="input">
-			<textarea rows="1" placeholder="<%= placeholder %>"></textarea>
-		</div>
-	</script>
+        function addDiveSegment() {
 
-	<!-- The command/result template (NB whitespace/line breaks matter inside <pre> tag): -->
-	<script type="text/template" id="tplCommand"><% if (! _hidden) { %><span class="command"><%= command %></span>
+            YUI().use(
+                    'aui-modal',
+                    function (Y) {
+
+                        var bottomGasses = bottomGassesTable.get("recordset");
+                        var bottomGasSelectionText = '<select id="diveSegmentBottomGasSelection">';
+                        for (var gasIndex in bottomGasses) {
+                            var bottomGas = bottomGasses[gasIndex];
+                            bottomGasSelectionText = bottomGasSelectionText + '<option value="'+bottomGas.name+'">'+bottomGas.name+'</option>';
+                        }
+                        bottomGasSelectionText = bottomGasSelectionText + "</select>";
+                        //alert(bottomGasSelectionText);
+                        var modal = new Y.Modal(
+                                {
+                                    bodyContent: 'Please Enter your Dive Segment Details: <br>Start Depth (Meters): <input id="diveSegmentStartDepth"/></br>End Depth(Meters):<input id="diveSegmentEndDepth"/></br>Select Bottom Gas:' + bottomGasSelectionText + '</br>Enter the amount of time (minutes):<input id="diveSegmentTime">',
+                                    centered: true,
+                                    destroyOnHide: true,
+                                    headerContent: '<h3>Enter Dive Segment</h3>',
+                                    modal: true,
+                                    render: '#getGasModal',
+                                    resizable: {
+                                        handles: 'b, r'
+                                    },
+                                    visible: true,
+                                    width: 450
+                                }
+                        ).render();
+
+                        modal.addToolbar(
+                                [
+                                    {
+                                        label: 'Cancel',
+                                        on: {
+                                            click: function () {
+                                                modal.hide();
+                                            }
+                                        }
+                                    },
+                                    {
+                                        label: 'Okay',
+                                        on: {
+                                            click: function () {
+                                                //Validate gas
+                                                var startDepth = parseFloat(Y.one("#diveSegmentStartDepth").get("value"));
+                                                var endDepth = parseFloat(Y.one("#diveSegmentEndDepth").get("value"));
+                                                var gasName = Y.one("#diveSegmentBottomGasSelection").get("value");
+                                                var time = parseFloat(Y.one("#diveSegmentTime").get("value"));
+                                                if (isNaN(startDepth) || startDepth < 0) {
+                                                    alert("Start Depth must be greater than or equal to 0 meters.");
+                                                    return;
+                                                }
+                                                if (isNaN(endDepth) || endDepth < 0) {
+                                                    alert("End Depth must be greater than or equal to 0 meters.");
+                                                    return;
+                                                }
+                                                if (isNaN(time) || time < 0) {
+                                                    alert("Segment time must be greater than or equal to 0 minutes.");
+                                                    return;
+                                                }
+                                                var diveSegments = diveSegmentsTable.get("recordset");
+                                                diveSegments.push({startDepth: startDepth, endDepth: endDepth, gasName: gasName, time: time});
+                                                diveSegmentsTable.set("recordset", diveSegments);
+                                                diveSegmentsTable.render();
+                                                modal.hide();
+                                            }
+                                        }
+                                    }
+                                ]
+                        );
+
+                    }
+            );
+        }
+
+    </script>
+
+<!-- Templates -->
+
+<!-- The sandbox template: -->
+<script type="text/template" id="tplSandbox">
+    <pre class="output"></pre>
+    <div class="input">
+        <textarea rows="1" placeholder="<%= placeholder %>"></textarea>
+    </div>
+</script>
+
+<!-- The command/result template (NB whitespace/line breaks matter inside <pre> tag): -->
+<script type="text/template" id="tplCommand"><% if (! _hidden) { %><span class="command"><%= command %></span>
 <span class="prefix"><%= this.resultPrefix %></span><span class="<%= _class %>"><%= result %></span>
 <% } %></script>
 
 
-	<!-- Scripts -->
+<!-- Scripts -->
 
-	<!-- Underscore, Backbone, backbone-localStorage, jQuery -->
-	<script src="src/libs/underscore.min.js"></script>
-	<script src="src/libs/backbone.min.js"></script>
-	<script src="src/libs/backbone-localStorage.min.js"></script>
-	<script src="src/libs/jquery.min.js"></script>
+<!-- Underscore, Backbone, backbone-localStorage, jQuery -->
+<script src="src/libs/underscore.min.js"></script>
+<script src="src/libs/backbone.min.js"></script>
+<script src="src/libs/backbone-localStorage.min.js"></script>
+<script src="src/libs/jquery.min.js"></script>
 
-	<!-- Some extras for the demo: -->
-	<script src="demo-resources/js/lettering.js"></script>
-	<script src="demo-resources/js/prettify.js"></script>
-	<script src="demo-resources/js/DAT.GUI.min.js"></script>
+<!-- Some extras for the demo: -->
+<script src="demo-resources/js/lettering.js"></script>
+<script src="demo-resources/js/prettify.js"></script>
+<script src="demo-resources/js/DAT.GUI.min.js"></script>
 
-	<!-- The JS Sandbox Console script (requires underscore, backbone and jquery): -->
-	<script src="src/sandbox-console.js"></script>
-	
-	<!-- When ready, create the model and view -->
-	<script type="text/javascript">
-		jQuery(document).ready(function($) {
-			// Create the sandbox:
-			window.sandbox = new Sandbox.View({
-				el : $('#sandbox'),
-				model : new Sandbox.Model()
-			});
-			
-			// Lettering.js:
-			$('h1').add('h2').add('h3').lettering();
+<!-- The JS Sandbox Console script (requires underscore, backbone and jquery): -->
+<script src="src/sandbox-console.js"></script>
 
-			// prettify code blocks:
-			prettyPrint();
+<!-- When ready, create the model and view -->
+<script type="text/javascript">
+    jQuery(document).ready(function($) {
+        // Create the sandbox:
+        window.sandbox = new Sandbox.View({
+            el : $('#sandbox'),
+            model : new Sandbox.Model()
+        });
 
-			// GUI demo controls:
-			DAT.GUI.autoPlace = false;
-			DAT.GUI.supressHotKeys = true;
+    });
+</script>
 
-			window.gui = new DAT.GUI();
-
-			gui.name('Commands to try out');
-			gui.close();
-
-			$(gui.domElement).css({
-				position:"absolute",
-				top:0,
-				right:-10
-			}).appendTo('body');
-
-			// Some custom callback functions for dat.gui:
-			sandbox.custom1 = function() {  sandbox.currentHistory = ":help"; sandbox.update(); sandbox.textarea.focus(); };
-			sandbox.custom2 = function() {  sandbox.currentHistory = ":clear"; sandbox.update(); sandbox.textarea.focus(); };
-			sandbox.custom3 = function() {  sandbox.currentHistory = "JSON.stringify(sandbox.model.get('history'), 0, 4);"; sandbox.update(); sandbox.textarea.focus(); };
-			sandbox.custom4 = function() {  sandbox.currentHistory = "sandbox.resultPrefix = '&raquo; '"; sandbox.update(); sandbox.textarea.focus(); };
-			sandbox.custom5 = function() {  sandbox.currentHistory = "var who = 'you', where = 'your life';"; sandbox.update(); sandbox.textarea.focus(); };
-			sandbox.custom6 = function() { sandbox.currentHistory = "function saySomethingFunny() {\n\treturn 'something funny';\n};\nsaySomethingFunny(); // hit return!"; sandbox.update(); sandbox.textarea.focus(); };
-			sandbox.custom7 = function() {  sandbox.currentHistory = "somethingUndefined; // hit enter!"; sandbox.update(); sandbox.textarea.focus(); };
-			sandbox.custom8 = function() {  sandbox.model.set({ iframe : true }); sandbox.model.addHistory({ command : " ", result : "Commands are now being evaluated inside a sandboxed iframe." }); sandbox.model.iframeSetup(); };
-			sandbox.custom9 = function() {  sandbox.currentHistory = ":load http://code.jquery.com/jquery-1.6.4.js"; sandbox.update(); sandbox.textarea.focus(); };
-			
-			gui.add(sandbox, 'custom1').name('Show <code>:help</code> menu');
-			gui.add(sandbox, 'custom2').name('<code>:clear</code> the command history');
-			gui.add(sandbox, 'custom3').name('View all history');
-			gui.add(sandbox, 'custom4').name('Set the result/response prefix');
-			gui.add(sandbox, 'custom5').name('Define some variables');
-			gui.add(sandbox, 'custom6').name('Multi-line input (use <code>alt</code> + <code>return</code>/<code>up</code>/<code>down</code>)');
-			gui.add(sandbox, 'custom7').name('Throw an error');
-			gui.add(sandbox, 'custom8').name('Switch on <code>iFrame</code> sandboxing');
-			gui.add(sandbox, 'custom9').name('<code>:load</code> a script (jQuery)');
-
-			gui.open();
-
-
-			// twitter:
-			(function(d, t) {
-				var g = d.createElement(t),
-					s = d.getElementsByTagName(t)[0];
-				g.async = true;
-				g.src = 'http://platform.twitter.com/widgets.js';
-				s.parentNode.insertBefore(g, s);
-			})(document, 'script');
-	
-			// google plus:
-			window.___gcfg = {lang: 'en-GB'};
-			(function() {
-				var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-				po.src = 'https://apis.google.com/js/plusone.js';
-				var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-			})();
-		});
-	</script>
 
 </body>
 </html>
