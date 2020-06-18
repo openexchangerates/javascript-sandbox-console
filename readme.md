@@ -80,7 +80,7 @@ newPlan.addFlat(30, "air", 10); //Stayed at 100 feet for 10 minutes
 newPlan.ndl(30, "air"); //How long do I have left so I can surface without a mandatory deco obligation?
 </pre>
 
-### Plan a multi-level recreational dive 
+### Plan a multi-level recreational dive
 <pre>
 var buhlmann = dive.deco.buhlmann();
 var newPlan = new buhlmann.plan(buhlmann.ZH16BTissues);
